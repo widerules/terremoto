@@ -13,20 +13,22 @@ import java.util.ArrayList;
 import net.morettoni.a.beans.Terremoto;
 import net.morettoni.a.beans.TerremotoItemAdapter;
 
-import android.app.Activity;
+import android.app.TabActivity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 
-public class TerremotoActivity extends Activity {
+public class TerremotoActivity extends TabActivity {
 	private ListView terremotiView;
 	private ArrayList<Terremoto> terremotiList;
 	private TerremotoItemAdapter terremotiItems;
+	private TabHost tabHost;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -34,6 +36,19 @@ public class TerremotoActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		tabHost = getTabHost();
+	    
+		tabHost.addTab(tabHost.newTabSpec("tab_lista").setIndicator("Lista").setContent(R.id.terremotiList));
+		
+		TabSpec tabSpec = tabHost.newTabSpec("tab_mappa");
+	    tabSpec.setIndicator("Mappa");
+	    Context ctx = this.getApplicationContext();
+	    Intent i = new Intent(ctx, TerremotoMapActivity.class);
+	    tabSpec.setContent(i);
+	    tabHost.addTab(tabSpec);
+			    
+		tabHost.setCurrentTab(0);
+	    
 		terremotiView = (ListView) findViewById(R.id.terremotiList);
 		terremotiList = new ArrayList<Terremoto>();
 

@@ -2,5 +2,6 @@
 <resources>
     <string name="app_name">Terremoto!</string>
     <string name="refresh">Aggiorna</string>
+    <string name="preference">Impostazioni</string>
 	<string name="feed">http://openmap.rm.ingv.it/gmaps/rec/files/last90days_events.csv</string>
 </resources>
