@@ -1,10 +1,11 @@
-package net.morettoni.a.beans;
+package net.morettoni.a;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import net.morettoni.a.R;
+import net.morettoni.a.beans.Terremoto;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +40,7 @@ public class TerremotoItemAdapter extends ArrayAdapter<Terremoto> {
 		
 		Terremoto terremoto = getItem(position);
 		Date dataEvento = terremoto.getData();
-		SimpleDateFormat sdf = new SimpleDateFormat("hh:mm dd/MM/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 		
 		dateView.setText(sdf.format(dataEvento));
 		luogoView.setText(terremoto.getLuogo());

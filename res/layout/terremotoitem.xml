@@ -2,38 +2,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content">
-	
+
 	<TextView android:id="@+id/rowMag" 
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" 
-		android:textStyle="bold"
-		android:scrollbars="vertical" 
-		android:fadingEdge="vertical"
-		android:layout_alignParentRight="true" />
+		android:layout_height="fill_parent"
+		
+		android:layout_alignParentTop="true"
+		android:layout_centerVertical="true"
 
+		android:paddingLeft="10px"
+		android:paddingRight="10px"
+
+		android:textStyle="bold"
+		android:textAppearance="@android:style/TextAppearance.Large" />
+	
 	<TextView android:id="@+id/rowPlace"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:textStyle="bold"
-		android:scrollbars="vertical"
-		android:fadingEdge="vertical"
-		android:layout_alignParentLeft="@+id/rowMag" />
+
+		android:layout_toRightOf="@id/rowMag"
+ 		android:layout_alignParentRight="true"
+		android:layout_alignParentTop="true" />
 
 	<TextView android:id="@+id/rowDeep" 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" 
+		
 		android:layout_below="@id/rowPlace"
-		android:scrollbars="vertical" 
-		android:fadingEdge="vertical"
-		android:layout_alignParentRight="true" />
+    	android:layout_alignParentRight="true" />
 
 	<TextView android:id="@+id/rowDate"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:textStyle="italic"
-		android:scrollbars="vertical"
-		android:fadingEdge="vertical"
-		android:layout_alignTop="@id/rowDeep"
-		android:layout_alignParentLeft="@id/rowDeep" />
+		
+		android:layout_toRightOf="@id/rowMag"
+		android:layout_toLeftOf="@id/rowDeep"
+        android:layout_alignTop="@id/rowDeep" />
 
 </RelativeLayout>

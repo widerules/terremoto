@@ -4,4 +4,5 @@
     <string name="refresh">Aggiorna</string>
     <string name="preference">Impostazioni</string>
 	<string name="feed">http://openmap.rm.ingv.it/gmaps/rec/files/last90days_events.csv</string>
+	<string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string>
 </resources>

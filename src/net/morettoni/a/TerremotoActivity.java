@@ -1,21 +1,17 @@
 package net.morettoni.a;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import net.morettoni.a.beans.Terremoto;
-import net.morettoni.a.beans.TerremotoItemAdapter;
 
 import android.app.TabActivity;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +25,31 @@ public class TerremotoActivity extends TabActivity {
 	private ArrayList<Terremoto> terremotiList;
 	private TerremotoItemAdapter terremotiItems;
 	private TabHost tabHost;
+	private TerremotoReceiver receiver;
+    
+    public class TerremotoReceiver extends BroadcastReceiver {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+    	  updateEvents();
+      }
+   	}
+
+    @Override 
+    public void onResume() {
+      IntentFilter filter;
+      filter = new IntentFilter(TerremotoService.LISTA_TERREMOTI_AGGIORNATA);
+      receiver = new TerremotoReceiver();
+      registerReceiver(receiver, filter);
+
+      updateEvents();
+      super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+      unregisterReceiver(receiver);
+      super.onPause();
+    }	
 
 	/** Called when the activity is first created. */
 	@Override
@@ -37,18 +58,21 @@ public class TerremotoActivity extends TabActivity {
 		setContentView(R.layout.main);
 
 		tabHost = getTabHost();
-	    
-		tabHost.addTab(tabHost.newTabSpec("tab_lista").setIndicator("Lista").setContent(R.id.terremotiList));
-		
+
+		tabHost.addTab(tabHost.newTabSpec("tab_lista").setIndicator(
+				"Lista",
+				getResources().getDrawable(
+						android.R.drawable.ic_menu_sort_by_size)).setContent(
+				R.id.terremotiList));
+
 		TabSpec tabSpec = tabHost.newTabSpec("tab_mappa");
-	    tabSpec.setIndicator("Mappa");
-	    Context ctx = this.getApplicationContext();
-	    Intent i = new Intent(ctx, TerremotoMapActivity.class);
-	    tabSpec.setContent(i);
-	    tabHost.addTab(tabSpec);
-			    
+		Intent i = new Intent().setClass(this, TerremotoMapActivity.class);
+		tabSpec.setIndicator("Mappa",
+				getResources().getDrawable(android.R.drawable.ic_menu_mapmode))
+				.setContent(i);
+		tabHost.addTab(tabSpec);
 		tabHost.setCurrentTab(0);
-	    
+
 		terremotiView = (ListView) findViewById(R.id.terremotiList);
 		terremotiList = new ArrayList<Terremoto>();
 
@@ -57,15 +81,16 @@ public class TerremotoActivity extends TabActivity {
 		terremotiView.setAdapter(terremotiItems);
 
 		updateEvents();
+		startService(new Intent(this, TerremotoService.class));		
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.options, menu);
-	    return true;
+		inflater.inflate(R.menu.options, menu);
+		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -78,46 +103,24 @@ public class TerremotoActivity extends TabActivity {
 
 	private void updateEvents() {
 		terremotiList.clear();
-		
-		String feed = getString(R.string.feed);
-		try {
-			URL url = new URL(feed);
-			HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-			int responseCode = httpConnection.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-			    BufferedReader in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-			    String str;
-			    String[] event;
-			    Terremoto terremoto;
-			    boolean firstLine = true;
-			    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+		ContentResolver cr = getContentResolver();
 
-			    while ((str = in.readLine()) != null) {
-			    	if (firstLine) {
-			    		firstLine =false;
-			    		continue;
-			    	}
-			    	
-			    	event = str.split(",");
-			    	
-			    	terremoto = new Terremoto();
-			    	terremoto.setLatitudine(Double.parseDouble(event[0]));
-			    	terremoto.setLongitudine(Double.parseDouble(event[1]));
-			    	terremoto.setProfondita(Double.parseDouble(event[2]));
-			    	try {
-						terremoto.setData(df.parse(event[3]));
-					} catch (ParseException e) {
-					}
-			    	terremoto.setMagnitude(Double.parseDouble(event[4]));
-			    	terremoto.setLuogo(event[5].replaceAll("_", " "));
-			    	
-			    	terremotiList.add(terremoto);
-			    }
-			    in.close();
-			}
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
-		}
+	    Cursor c = cr.query(TerremotoProvider.CONTENT_URI, null, null, null, null);
+			 
+	      if (c.moveToFirst()) {
+	        do {
+	        	Terremoto terremoto = new Terremoto();
+	        	terremoto.setId(c.getLong(TerremotoProvider.ID_COLUMN));
+	        	terremoto.setData(new Date(c.getLong(TerremotoProvider.DATA_COLUMN)));
+	        	terremoto.setLongitudine(c.getDouble(TerremotoProvider.LONGITUDE_COLUMN));
+	        	terremoto.setLatitudine(c.getDouble(TerremotoProvider.LATITUDE_COLUMN));
+	        	terremoto.setMagnitude(c.getDouble(TerremotoProvider.MAGNITUDE_COLUMN));
+	        	terremoto.setLuogo(c.getString(TerremotoProvider.WHERE_COLUMN));
+	        	terremoto.setProfondita(c.getDouble(TerremotoProvider.DEEP_COLUMN));
+	        	
+	        	terremotiList.add(terremoto);
+	        } while(c.moveToNext());
+	      }
 
 		terremotiItems.notifyDataSetChanged();
 	}

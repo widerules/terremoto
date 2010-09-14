@@ -8,5 +8,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:clickable="true"
-                android:apiKey="0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA" />
+                android:enabled="true" 
+                android:apiKey="@string/map_key" />
 </LinearLayout>

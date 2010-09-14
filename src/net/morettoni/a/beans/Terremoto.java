@@ -2,48 +2,27 @@ package net.morettoni.a.beans;
 
 import java.util.Date;
 
+import com.google.android.maps.GeoPoint;
+
 public class Terremoto {
+	private long id;
 	private double magnitude;
 	private String luogo;
 	private Date data;
-	private String link;
 	private double profondita;
 	private double latitudine;
 	private double longitudine;
 	
 	public Terremoto() {
 	}
-
-	public Terremoto(double magnitude, double profondita, String luogo, Date data) {
-		this.magnitude = magnitude;
-		this.profondita = profondita;
-		this.luogo = luogo;
-		this.data = data;
-	}
-
-	public Terremoto(double magnitude, double profondita, String luogo, Date data, String link) {
-		this.magnitude = magnitude;
-		this.profondita = profondita;
-		this.luogo = luogo;
-		this.data = data;
-		this.link = link;
+	
+	public GeoPoint getGeoPoint() {
+		Double lat = latitudine * 1E6;
+		Double lng = longitudine * 1E6;
+			
+		return new GeoPoint(lng.intValue(), lat.intValue());
 	}
 	
-	public Terremoto(double magnitude, double profondita, String luogo, Date data, String link, double latitudine, double longitudine) {
-		this.magnitude = magnitude;
-		this.profondita = profondita;
-		this.luogo = luogo;
-		this.data = data;
-		this.link = link;
-		this.latitudine = latitudine;
-		this.longitudine = longitudine;
-	}
-	
-	@Override
-	public String toString() {
-		return String.format("(%.1f) %s", magnitude, luogo);
-	}
-
 	public Date getData() {
 		return data;
 	}
@@ -76,12 +55,12 @@ public class Terremoto {
 		this.luogo = luogo;
 	}
 
-	public String getLink() {
-		return link;
+	public long getId() {
+		return id;
 	}
 
-	public void setLink(String link) {
-		this.link = link;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public double getLatitudine() {
