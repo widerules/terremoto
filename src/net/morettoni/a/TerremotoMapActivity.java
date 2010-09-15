@@ -50,7 +50,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 			
 			MapView mapView = (MapView) findViewById(R.id.terremotiMap);
 			mapView.getController().animateTo(geoPoint);
-			mapView.getController().setZoom(18);			
+			mapView.getController().setZoom(10);
 			mapView.invalidate();
 		}
 	}
@@ -90,14 +90,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		mapView.displayZoomControls(true);
 		mapView.setSatellite(true);
-
-		myLocationOverlay.runOnFirstFix(new Runnable() {
-			public void run() {
-				mapView.getController().animateTo(
-						myLocationOverlay.getMyLocation());
-				mapView.getController().setZoom(18);
-			}
-		});
+		mapView.getController().setZoom(7);
 
 		refreshTerremoti();
 		mapView.invalidate();
@@ -167,18 +160,33 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 		centerTerremotiReceiver = new CenterTerremotoReceiver();
 		registerReceiver(centerTerremotiReceiver, filter);		
 
+		if (myLocationOverlay != null) {
+			myLocationOverlay.enableCompass();
+			myLocationOverlay.enableMyLocation();
+		}
+
 		super.onResume();
 	}
 
 	@Override
 	public void onPause() {
 		terremotiCursor.deactivate();
+		if (myLocationOverlay != null) {
+			myLocationOverlay.disableCompass();
+			myLocationOverlay.disableMyLocation();
+		}
+
 		super.onPause();
 	}
 
 	@Override
 	public void onDestroy() {
 		terremotiCursor.close();
+		if (myLocationOverlay != null) {
+			myLocationOverlay.disableCompass();
+			myLocationOverlay.disableMyLocation();
+		}
+		
 		super.onDestroy();
 	}
 }

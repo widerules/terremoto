@@ -18,7 +18,7 @@ public class TerremotoItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		terremoti = new ArrayList<Terremoto>();
 		populate();
 	}
-	
+
 	public void addOverlay(Terremoto overlay) {
 		terremoti.add(overlay);
 		setLastFocusedIndex(-1);
@@ -30,15 +30,16 @@ public class TerremotoItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		setLastFocusedIndex(-1);
 		populate();
 	}
-	
+
 	@Override
 	protected OverlayItem createItem(int i) {
 		Terremoto terremoto = terremoti.get(i);
 		OverlayItem oi = new OverlayItem(terremoto.getGeoPoint(), "Terremoto",
-				String.format("%s: %.1f", terremoto.getLuogo(), terremoto.getMagnitude()));
+				String.format("%s: %.1f", terremoto.getLuogo(), terremoto
+						.getMagnitude()));
 		return oi;
 	}
-
+	
 	@Override
 	public int size() {
 		return terremoti.size();

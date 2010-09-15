@@ -42,6 +42,8 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f060000;
         public static final int feed=0x7f060003;
+        /**  debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string> 
+         */
         public static final int map_key=0x7f060004;
         public static final int preference=0x7f060002;
         public static final int refresh=0x7f060001;
