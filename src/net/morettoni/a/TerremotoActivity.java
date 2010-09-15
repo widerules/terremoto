@@ -19,8 +19,11 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.TabSpec;
 
 public class TerremotoActivity extends TabActivity implements OnSharedPreferenceChangeListener {
@@ -80,6 +83,15 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 		terremotiView = (ListView) findViewById(R.id.terremotiList);
 		terremotiList = new ArrayList<Terremoto>();
 
+		terremotiView.setOnItemClickListener(new OnItemClickListener() {
+	    
+	    @SuppressWarnings("unchecked")
+		public void onItemClick(AdapterView _av, View _v, int _index, long arg3) {
+	        Terremoto terremoto = terremotiList.get(_index);
+	        showTerremoto(terremoto);
+	      }
+	    });		
+
 		terremotiItems = new TerremotoItemAdapter(this, R.layout.terremotoitem,
 				terremotiList);
 		terremotiView.setAdapter(terremotiItems);
@@ -91,6 +103,15 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 
 		updateEvents();
 		startService(new Intent(this, TerremotoService.class));
+	}
+	
+	private void showTerremoto(Terremoto terremoto) {
+		tabHost.setCurrentTab(1);
+		
+		Intent intent = new Intent(TerremotoMapActivity.CENTER_TERREMOTO);
+		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
+		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());		
+		sendBroadcast(intent);
 	}
 
 	@Override

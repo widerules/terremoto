@@ -1,5 +1,6 @@
 package net.morettoni.a;
 
+import net.morettoni.a.beans.Terremoto;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -21,21 +24,37 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.MapView.LayoutParams;
 
 public class TerremotoMapActivity extends MapActivity implements OnSharedPreferenceChangeListener {
+	public static final String CENTER_TERREMOTO = "net.morettoni.terremoto.CENTER_TERREMOTO";
 	private Cursor terremotiCursor;
-	private TerremotiReceiver receiver;
+	private TerremotiReceiver terremotiReceiver;
+	private CenterTerremotoReceiver centerTerremotiReceiver;
 	private MapView mapView;
 	private MapController mc;
 	private MyLocationOverlay myLocationOverlay;
-	private TerremotoOverlay terremotoOverlay;
+	private TerremotoItemizedOverlay terremotoItemizedOverlay;
+	private int minMag = 3;
 
 	public class TerremotiReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
-			terremotiCursor.requery();
+			refreshTerremoti();
 			MapView mapView = (MapView) findViewById(R.id.terremotiMap);
 			mapView.invalidate();
 		}
 	}
 
+	public class CenterTerremotoReceiver extends BroadcastReceiver {
+		public void onReceive(Context context, Intent intent) {
+			Double lat = intent.getDoubleExtra(TerremotoProvider.KEY_LAT, 0.0) * 1E6;
+			Double lng = intent.getDoubleExtra(TerremotoProvider.KEY_LNG, 0.0) * 1E6;
+			GeoPoint geoPoint = new GeoPoint(lng.intValue(), lat.intValue());
+			
+			MapView mapView = (MapView) findViewById(R.id.terremotiMap);
+			mapView.getController().animateTo(geoPoint);
+			mapView.getController().setZoom(18);			
+			mapView.invalidate();
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,11 +75,13 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 		Context context = getApplicationContext();
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		prefs.registerOnSharedPreferenceChangeListener(this);
-		int minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
+		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
 		
-		terremotoOverlay = new TerremotoOverlay(terremotiCursor);
-		terremotoOverlay.setMinMag(minMag);
-		mapView.getOverlays().add(terremotoOverlay);
+		Drawable defaultMarker = getResources().getDrawable(R.drawable.map_marker_blue); 
+		defaultMarker.setBounds(0, 0, defaultMarker.getIntrinsicWidth(), 
+		    defaultMarker.getIntrinsicHeight()); 
+		terremotoItemizedOverlay = new TerremotoItemizedOverlay(defaultMarker);
+		mapView.getOverlays().add(terremotoItemizedOverlay);
 		mapView.getOverlays().add(myLocationOverlay);
 
 		LinearLayout zoomLayout = (LinearLayout) findViewById(R.id.layout_zoom);
@@ -78,15 +99,40 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 			}
 		});
 
+		refreshTerremoti();
 		mapView.invalidate();
 	}
 	
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals("PREF_MIN_MAG")) {
-			int newMag = Integer.parseInt(sharedPreferences.getString("PREF_MIN_MAG", "0"));
-			terremotoOverlay.setMinMag(newMag);
-			mapView.invalidate();
+			int mag = Integer.parseInt(sharedPreferences.getString("PREF_MIN_MAG", "0"));
+			if (minMag != mag) {
+				minMag = mag;
+				refreshTerremoti();
+				mapView.invalidate();
+			}
+		}
+	}
+	
+	private void refreshTerremoti() {
+		Terremoto terremoto;
+		double mag;
+		
+		terremotoItemizedOverlay.clear();
+		terremotiCursor.requery();
+		if (terremotiCursor.moveToFirst()) {
+			do {
+				mag = terremotiCursor.getDouble(TerremotoProvider.MAGNITUDE_COLUMN);
+				if (mag >= minMag) {
+					terremoto = new Terremoto();
+					terremoto.setLatitudine(terremotiCursor.getFloat(TerremotoProvider.LATITUDE_COLUMN));
+					terremoto.setLongitudine(terremotiCursor.getFloat(TerremotoProvider.LONGITUDE_COLUMN));
+					terremoto.setLuogo(terremotiCursor.getString(TerremotoProvider.WHERE_COLUMN));
+					terremoto.setMagnitude(mag);
+					terremotoItemizedOverlay.addOverlay(terremoto);
+				}
+			} while (terremotiCursor.moveToNext());
 		}
 	}	
 
@@ -114,8 +160,12 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 
 		IntentFilter filter;
 		filter = new IntentFilter(TerremotoService.NUOVO_TERREMOTO);
-		receiver = new TerremotiReceiver();
-		registerReceiver(receiver, filter);
+		terremotiReceiver = new TerremotiReceiver();
+		registerReceiver(terremotiReceiver, filter);
+		
+		filter = new IntentFilter(CENTER_TERREMOTO);
+		centerTerremotiReceiver = new CenterTerremotoReceiver();
+		registerReceiver(centerTerremotiReceiver, filter);		
 
 		super.onResume();
 	}

@@ -9,7 +9,7 @@
 	<ListPreference android:key="PREF_UPDATE_FREQ"
 		android:dependency="PREF_AUTO_UPDATE"
 		android:title="Frequenza di aggiornamento"
-		android:summary="Frequenza con cui aggiornare la lista dei terremoti"
+		android:summary="Frequenza con cui aggiornare la lista degli eventi"
 		android:entries="@array/update_freq_options"
 		android:entryValues="@array/update_freq_values"
 		android:dialogTitle="Frequenza di aggiornamento"

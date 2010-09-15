@@ -39,9 +39,7 @@ public class TerremotoService extends Service {
 	public void onCreate() {
 		alarms = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-		String ALARM_ACTION;
-		ALARM_ACTION = TerremotoAlarmReceiver.TERREMOTI_ALARM;
-		Intent intentToFire = new Intent(ALARM_ACTION);
+		Intent intentToFire = new Intent(TerremotoAlarmReceiver.TERREMOTI_ALARM);
 		alarmIntent = PendingIntent.getBroadcast(this, 0, intentToFire, 0);
 	}
 
