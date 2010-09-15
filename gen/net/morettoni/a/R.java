@@ -14,8 +14,9 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int preference=0x7f060007;
-        public static final int refresh=0x7f060006;
+        public static final int layout_zoom=0x7f060006;
+        public static final int preference=0x7f060008;
+        public static final int refresh=0x7f060007;
         public static final int rowDate=0x7f060004;
         public static final int rowDeep=0x7f060003;
         public static final int rowMag=0x7f060001;

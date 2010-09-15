@@ -17,11 +17,9 @@ import net.morettoni.a.beans.Terremoto;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.widget.Toast;
 
 public class TerremotoService extends Service {
 
@@ -54,12 +52,13 @@ public class TerremotoService extends Service {
 					String str;
 					String[] event;
 					Terremoto terremoto;
-					int count = 0;
+					boolean firstLine = true;
 					SimpleDateFormat df = new SimpleDateFormat(
 							"dd/MM/yyyy hh:mm:ss");
 
 					while ((str = in.readLine()) != null) {
-						if (count++ == 0) {
+						if (firstLine) {
+							firstLine = false;
 							continue;
 						}
 
@@ -79,7 +78,7 @@ public class TerremotoService extends Service {
 						terremoto.setLuogo(event[5].replaceAll("_", " "));
 						terremoto.setId(Long.parseLong(event[6]));
 
-						if (count < 5 && aggiungi(terremoto))
+						if (aggiungi(terremoto))
 							publishProgress(terremoto);
 					}
 					in.close();
@@ -93,10 +92,12 @@ public class TerremotoService extends Service {
 
 		@Override
 		protected void onProgressUpdate(Terremoto... values) {
+/*			
 			Context context = getApplicationContext();
 			String expandedTitle = String.format("%s: %.1f", values[0]
 					.getLuogo(), values[0].getMagnitude());
 			Toast.makeText(context, expandedTitle, Toast.LENGTH_SHORT).show();
+*/
 		}
 
 		@Override
@@ -171,8 +172,7 @@ public class TerremotoService extends Service {
 	}
 
 	private void aggiornaTerremoti() {
-		if (lastLookup == null
-				|| lastLookup.getStatus().equals(AsyncTask.Status.FINISHED)) {
+		if (lastLookup == null || lastLookup.getStatus().equals(AsyncTask.Status.FINISHED)) {
 			lastLookup = new TerremotoLookupTask();
 			lastLookup.execute((Void[]) null);
 		}
