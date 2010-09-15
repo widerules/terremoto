@@ -102,10 +102,14 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Context context = getBaseContext();
 		switch (item.getItemId()) {
+		case R.id.refresh:
+			Intent startIntent = new Intent(context, TerremotoService.class);
+			context.startService(startIntent);
+			return true;
 		case R.id.preference:
-			Intent settingsActivity = new Intent(getBaseContext(),
-					TerremotoPreference.class);
+			Intent settingsActivity = new Intent(context, TerremotoPreference.class);
 			startActivity(settingsActivity);
 			return true;
 		}

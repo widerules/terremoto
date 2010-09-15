@@ -21,7 +21,8 @@ public final class R {
     }
     public static final class id {
         public static final int layout_zoom=0x7f080006;
-        public static final int preference=0x7f080007;
+        public static final int preference=0x7f080008;
+        public static final int refresh=0x7f080007;
         public static final int rowDate=0x7f080004;
         public static final int rowDeep=0x7f080003;
         public static final int rowMag=0x7f080001;

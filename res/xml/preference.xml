@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <CheckBoxPreference
+    android:key="PREF_AUTO_UPDATE"
+    android:title="Aggiornamento automatico"
+    android:summary="Aggiorna gli eventi sismici automaticamente" 
+    android:defaultValue="true"
+  />                        
 	<ListPreference android:key="PREF_UPDATE_FREQ"
+		android:dependency="PREF_AUTO_UPDATE"
 		android:title="Frequenza di aggiornamento"
 		android:summary="Frequenza con cui aggiornare la lista dei terremoti"
 		android:entries="@array/update_freq_options"

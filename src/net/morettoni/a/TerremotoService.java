@@ -9,11 +9,11 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import net.morettoni.a.beans.Terremoto;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
 public class TerremotoService extends Service {
@@ -29,13 +30,19 @@ public class TerremotoService extends Service {
 	public static final String NUOVO_TERREMOTO = "Nuovo_Terremoto";
 	public static final String TERREMOTI_TIMER = "TerremotiTimer";
 	public static String LISTA_TERREMOTI_AGGIORNATA = "net.morettoni.terremoto.nuovi_terremoti";
-	private Timer updateTimer;
-
+	// private Timer updateTimer;
 	private TerremotoLookupTask lastLookup = null;
+	private AlarmManager alarms;
+	private PendingIntent alarmIntent;
 
 	@Override
 	public void onCreate() {
-		updateTimer = new Timer(TERREMOTI_TIMER);
+		alarms = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+		String ALARM_ACTION;
+		ALARM_ACTION = TerremotoAlarmReceiver.TERREMOTI_ALARM;
+		Intent intentToFire = new Intent(ALARM_ACTION);
+		alarmIntent = PendingIntent.getBroadcast(this, 0, intentToFire, 0);
 	}
 
 	private class TerremotoLookupTask extends AsyncTask<Void, Terremoto, Void> {
@@ -97,12 +104,12 @@ public class TerremotoService extends Service {
 
 		@Override
 		protected void onProgressUpdate(Terremoto... values) {
-/*			
-			Context context = getApplicationContext();
-			String expandedTitle = String.format("%s: %.1f", values[0]
-					.getLuogo(), values[0].getMagnitude());
-			Toast.makeText(context, expandedTitle, Toast.LENGTH_SHORT).show();
-*/
+			/*
+			 * Context context = getApplicationContext(); String expandedTitle =
+			 * String.format("%s: %.1f", values[0] .getLuogo(),
+			 * values[0].getMagnitude()); Toast.makeText(context, expandedTitle,
+			 * Toast.LENGTH_SHORT).show();
+			 */
 		}
 
 		@Override
@@ -112,21 +119,30 @@ public class TerremotoService extends Service {
 		}
 	}
 
-	private TimerTask doRefresh = new TimerTask() {
-		public void run() {
-			aggiornaTerremoti();
-		}
-	};
-	
+	// private TimerTask doRefresh = new TimerTask() {
+	// public void run() {
+	// aggiornaTerremoti();
+	// }
+	// };
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Context context = getApplicationContext();
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int updateFreq = Integer.parseInt(prefs.getString("PREF_UPDATE_FREQ", "30"));
-
-		updateTimer.cancel();
-		updateTimer = new Timer(TERREMOTI_TIMER);
-		updateTimer.scheduleAtFixedRate(doRefresh, 0,updateFreq*60*1000);
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		int updateFreq = Integer.parseInt(prefs.getString("PREF_UPDATE_FREQ",
+				"30"));
+		boolean autoUpdate = prefs.getBoolean("PREF_AUTO_UPDATE", true);
+		
+		if (autoUpdate) {
+			int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+			long timeToRefresh = SystemClock.elapsedRealtime() + updateFreq
+					* 60 * 1000;
+			alarms.setRepeating(alarmType, timeToRefresh,
+					updateFreq * 60 * 1000, alarmIntent);
+		} else {
+			alarms.cancel(alarmIntent);
+		}
 
 		aggiornaTerremoti();
 
@@ -143,11 +159,13 @@ public class TerremotoService extends Service {
 
 		String w = TerremotoProvider.KEY_ID + " = " + terremoto.getId();
 
-		if (cr.query(TerremotoProvider.CONTENT_URI, null, w, null, null).getCount() <= 0) {
+		if (cr.query(TerremotoProvider.CONTENT_URI, null, w, null, null)
+				.getCount() <= 0) {
 			ContentValues values = new ContentValues();
 
 			values.put(TerremotoProvider.KEY_ID, terremoto.getId());
-			values.put(TerremotoProvider.KEY_DATA, terremoto.getData().getTime());
+			values.put(TerremotoProvider.KEY_DATA, terremoto.getData()
+					.getTime());
 			values.put(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
 			values.put(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());
 			values.put(TerremotoProvider.KEY_MAG, terremoto.getMagnitude());
@@ -158,25 +176,27 @@ public class TerremotoService extends Service {
 			nuovoTerremoto(terremoto);
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	private void nuovoTerremoto(Terremoto terremoto) {
 		Intent intent = new Intent(NUOVO_TERREMOTO);
 		intent.putExtra(TerremotoProvider.KEY_ID, terremoto.getId());
-		intent.putExtra(TerremotoProvider.KEY_DATA, terremoto.getData().getTime());
+		intent.putExtra(TerremotoProvider.KEY_DATA, terremoto.getData()
+				.getTime());
 		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
 		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());
 		intent.putExtra(TerremotoProvider.KEY_MAG, terremoto.getMagnitude());
 		intent.putExtra(TerremotoProvider.KEY_WHERE, terremoto.getLuogo());
 		intent.putExtra(TerremotoProvider.KEY_DEEP, terremoto.getProfondita());
-		
+
 		sendBroadcast(intent);
 	}
 
 	private void aggiornaTerremoti() {
-		if (lastLookup == null || lastLookup.getStatus().equals(AsyncTask.Status.FINISHED)) {
+		if (lastLookup == null
+				|| lastLookup.getStatus().equals(AsyncTask.Status.FINISHED)) {
 			lastLookup = new TerremotoLookupTask();
 			lastLookup.execute((Void[]) null);
 		}
