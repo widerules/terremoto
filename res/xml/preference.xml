@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<ListPreference android:key="PREF_UPDATE_FREQ"
+		android:title="Frequenza di aggiornamento"
+		android:summary="Frequenza con cui aggiornare la lista dei terremoti"
+		android:entries="@array/update_freq_options"
+		android:entryValues="@array/update_freq_values"
+		android:dialogTitle="Frequenza di aggiornamento"
+		android:defaultValue="30" />
+	<ListPreference android:key="PREF_MIN_MAG"
+		android:title="Magnitudine minima"
+		android:summary="Intensita' minima degli eventi da visualizzare"
+		android:entries="@array/magnitude_options"
+		android:entryValues="@array/magnitude"
+		android:dialogTitle="Magnitudine"
+		android:defaultValue="3" />
+</PreferenceScreen>

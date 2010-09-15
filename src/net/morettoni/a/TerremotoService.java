@@ -17,9 +17,12 @@ import net.morettoni.a.beans.Terremoto;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 
 public class TerremotoService extends Service {
 
@@ -80,6 +83,8 @@ public class TerremotoService extends Service {
 
 						if (aggiungi(terremoto))
 							publishProgress(terremoto);
+						else
+							break;
 					}
 					in.close();
 				}
@@ -115,14 +120,13 @@ public class TerremotoService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		int updateFreq = 5;
-		boolean autoUpdate = true;
+		Context context = getApplicationContext();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		int updateFreq = Integer.parseInt(prefs.getString("PREF_UPDATE_FREQ", "30"));
 
 		updateTimer.cancel();
-		if (autoUpdate) {
-			updateTimer = new Timer(TERREMOTI_TIMER);
-			updateTimer.scheduleAtFixedRate(doRefresh, 0,updateFreq*60*1000);
-		}
+		updateTimer = new Timer(TERREMOTI_TIMER);
+		updateTimer.scheduleAtFixedRate(doRefresh, 0,updateFreq*60*1000);
 
 		aggiornaTerremoti();
 

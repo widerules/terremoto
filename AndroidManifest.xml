@@ -19,6 +19,8 @@
 				<category android:name="android.intent.category.EMBED"></category>
 			</intent-filter>
 		</activity>
+		<activity android:name=".TerremotoPreference" android:label="@string/preference">
+		</activity>
 		
 		<provider android:name=".TerremotoProvider"
           android:authorities="net.morettoni.a.provider.terremoto" />

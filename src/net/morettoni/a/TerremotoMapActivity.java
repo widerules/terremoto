@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -17,12 +20,13 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.MapView.LayoutParams;
 
-public class TerremotoMapActivity extends MapActivity {
+public class TerremotoMapActivity extends MapActivity implements OnSharedPreferenceChangeListener {
 	private Cursor terremotiCursor;
 	private TerremotiReceiver receiver;
 	private MapView mapView;
 	private MapController mc;
 	private MyLocationOverlay myLocationOverlay;
+	private TerremotoOverlay terremotoOverlay;
 
 	public class TerremotiReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
@@ -48,9 +52,15 @@ public class TerremotoMapActivity extends MapActivity {
 		myLocationOverlay = new MyLocationOverlay(this, mapView);
 		myLocationOverlay.enableCompass();
 		myLocationOverlay.enableMyLocation();
-
-		TerremotoOverlay eo = new TerremotoOverlay(terremotiCursor);
-		mapView.getOverlays().add(eo);
+		
+		Context context = getApplicationContext();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		prefs.registerOnSharedPreferenceChangeListener(this);
+		int minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
+		
+		terremotoOverlay = new TerremotoOverlay(terremotiCursor);
+		terremotoOverlay.setMinMag(minMag);
+		mapView.getOverlays().add(terremotoOverlay);
 		mapView.getOverlays().add(myLocationOverlay);
 
 		LinearLayout zoomLayout = (LinearLayout) findViewById(R.id.layout_zoom);
@@ -64,12 +74,21 @@ public class TerremotoMapActivity extends MapActivity {
 			public void run() {
 				mapView.getController().animateTo(
 						myLocationOverlay.getMyLocation());
-				mapView.getController().setZoom(16);
+				mapView.getController().setZoom(18);
 			}
 		});
 
 		mapView.invalidate();
 	}
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals("PREF_MIN_MAG")) {
+			int newMag = Integer.parseInt(sharedPreferences.getString("PREF_MIN_MAG", "0"));
+			terremotoOverlay.setMinMag(newMag);
+			mapView.invalidate();
+		}
+	}	
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

@@ -18,6 +18,14 @@ public class TerremotoOverlay extends Overlay {
 	private Cursor terremotiCursor;
 	private ArrayList<GeoPoint> terremotiLocations;
 	private int rad = 5;
+	private int minMag = 3;
+	
+	public void setMinMag(int newMag) {
+		if (newMag != minMag) {
+			minMag = newMag;
+			refreshTerremoti();
+		}
+	}
 
 	public TerremotoOverlay(Cursor cursor) {
 		super();
@@ -34,15 +42,18 @@ public class TerremotoOverlay extends Overlay {
 	}
 
 	private void refreshTerremoti() {
-		if (terremotiCursor.moveToFirst())
+		terremotiLocations.clear();
+		if (terremotiCursor.moveToFirst()) {
 			do {
-				Double lat = terremotiCursor.getFloat(TerremotoProvider.LATITUDE_COLUMN) * 1E6;
-				Double lng = terremotiCursor.getFloat(TerremotoProvider.LONGITUDE_COLUMN) * 1E6;
-
-				GeoPoint geoPoint = new GeoPoint(lng.intValue(), lat.intValue());
-				terremotiLocations.add(geoPoint);
-
+				if (terremotiCursor.getDouble(TerremotoProvider.MAGNITUDE_COLUMN) >= minMag) {
+					Double lat = terremotiCursor.getFloat(TerremotoProvider.LATITUDE_COLUMN) * 1E6;
+					Double lng = terremotiCursor.getFloat(TerremotoProvider.LONGITUDE_COLUMN) * 1E6;
+	
+					GeoPoint geoPoint = new GeoPoint(lng.intValue(), lat.intValue());
+					terremotiLocations.add(geoPoint);
+				}
 			} while (terremotiCursor.moveToNext());
+		}
 	}
 
 	@Override
