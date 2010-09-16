@@ -21,4 +21,11 @@
 		android:entryValues="@array/magnitude"
 		android:dialogTitle="Magnitudine"
 		android:defaultValue="3" />
+	<ListPreference android:key="PREF_MAP_PINS"
+		android:title="Eventi in mappa"
+		android:summary="Numero degli eventi da visualizzare sulla mappa"
+		android:entries="@array/pins_options"
+		android:entryValues="@array/pins"
+		android:dialogTitle="Numero eventi"
+		android:defaultValue="10" />
 </PreferenceScreen>

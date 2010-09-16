@@ -33,6 +33,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	private MyLocationOverlay myLocationOverlay;
 	private TerremotoItemizedOverlay terremotoItemizedOverlay;
 	private int minMag = 3;
+	private int maxPins = 10;
 
 	public class TerremotiReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
@@ -44,12 +45,15 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 
 	public class CenterTerremotoReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
-			Double lat = intent.getDoubleExtra(TerremotoProvider.KEY_LAT, 0.0) * 1E6;
-			Double lng = intent.getDoubleExtra(TerremotoProvider.KEY_LNG, 0.0) * 1E6;
-			GeoPoint geoPoint = new GeoPoint(lng.intValue(), lat.intValue());
-			
+			Terremoto terremoto = new Terremoto();
+			terremoto.setLatitudine(intent.getDoubleExtra(TerremotoProvider.KEY_LAT, 0.0));
+			terremoto.setLongitudine(intent.getDoubleExtra(TerremotoProvider.KEY_LNG, 0.0));
+			terremoto.setLuogo(intent.getStringExtra(TerremotoProvider.KEY_WHERE));
+			terremoto.setMagnitude(intent.getDoubleExtra(TerremotoProvider.KEY_MAG, 0.0));
+			terremotoItemizedOverlay.addOverlay(terremoto);
+
 			MapView mapView = (MapView) findViewById(R.id.terremotiMap);
-			mapView.getController().animateTo(geoPoint);
+			mapView.getController().animateTo(terremoto.getGeoPoint());
 			mapView.getController().setZoom(10);
 			mapView.invalidate();
 		}
@@ -76,6 +80,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		prefs.registerOnSharedPreferenceChangeListener(this);
 		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
+		maxPins = Integer.parseInt(prefs.getString("PREF_MAP_PINS", "10"));
 		
 		Drawable defaultMarker = getResources().getDrawable(R.drawable.map_marker_blue); 
 		defaultMarker.setBounds(0, 0, defaultMarker.getIntrinsicWidth(), 
@@ -99,9 +104,18 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals("PREF_MIN_MAG")) {
-			int mag = Integer.parseInt(sharedPreferences.getString("PREF_MIN_MAG", "0"));
+			int mag = Integer.parseInt(sharedPreferences.getString("PREF_MIN_MAG", "3"));
 			if (minMag != mag) {
 				minMag = mag;
+				refreshTerremoti();
+				mapView.invalidate();
+			}
+		}
+
+		if (key.equals("PREF_MAP_PINS")) {
+			int pins = Integer.parseInt(sharedPreferences.getString("PREF_MAP_PINS", "10"));
+			if (maxPins != pins) {
+				maxPins = pins;
 				refreshTerremoti();
 				mapView.invalidate();
 			}
@@ -111,6 +125,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	private void refreshTerremoti() {
 		Terremoto terremoto;
 		double mag;
+		int pins = maxPins;
 		
 		terremotoItemizedOverlay.clear();
 		terremotiCursor.requery();
@@ -124,8 +139,9 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 					terremoto.setLuogo(terremotiCursor.getString(TerremotoProvider.WHERE_COLUMN));
 					terremoto.setMagnitude(mag);
 					terremotoItemizedOverlay.addOverlay(terremoto);
+					pins--;
 				}
-			} while (terremotiCursor.moveToNext());
+			} while (terremotiCursor.moveToNext() && pins > 0);
 		}
 	}	
 

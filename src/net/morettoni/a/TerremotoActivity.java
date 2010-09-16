@@ -111,6 +111,8 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 		Intent intent = new Intent(TerremotoMapActivity.CENTER_TERREMOTO);
 		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
 		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());		
+		intent.putExtra(TerremotoProvider.KEY_WHERE, terremoto.getLuogo());		
+		intent.putExtra(TerremotoProvider.KEY_MAG, terremoto.getMagnitude());		
 		sendBroadcast(intent);
 	}
 

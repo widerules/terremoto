@@ -10,9 +10,11 @@ package net.morettoni.a;
 public final class R {
     public static final class array {
         public static final int magnitude=0x7f050003;
-        public static final int magnitude_options=0x7f050001;
+        public static final int magnitude_options=0x7f050002;
+        public static final int pins=0x7f050005;
+        public static final int pins_options=0x7f050004;
         public static final int update_freq_options=0x7f050000;
-        public static final int update_freq_values=0x7f050002;
+        public static final int update_freq_values=0x7f050001;
     }
     public static final class attr {
     }
@@ -42,8 +44,6 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f060000;
         public static final int feed=0x7f060003;
-        /**  debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string> 
-         */
         public static final int map_key=0x7f060004;
         public static final int preference=0x7f060002;
         public static final int refresh=0x7f060001;
