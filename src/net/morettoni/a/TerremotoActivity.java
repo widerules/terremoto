@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -64,18 +65,18 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		Resources res = getResources();
 		tabHost = getTabHost();
 
 		tabHost.addTab(tabHost.newTabSpec("tab_lista").setIndicator(
 				"Lista",
-				getResources().getDrawable(
-						android.R.drawable.ic_menu_sort_by_size)).setContent(
-				R.id.terremotiList));
+				res.getDrawable(R.drawable.list_tab))
+				.setContent(R.id.terremotiList));
 
 		TabSpec tabSpec = tabHost.newTabSpec("tab_mappa");
 		Intent i = new Intent().setClass(this, TerremotoMapActivity.class);
 		tabSpec.setIndicator("Mappa",
-				getResources().getDrawable(android.R.drawable.ic_menu_mapmode))
+				res.getDrawable(R.drawable.map_tab))
 				.setContent(i);
 		tabHost.addTab(tabSpec);
 		tabHost.setCurrentTab(0);

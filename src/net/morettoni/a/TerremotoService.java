@@ -30,7 +30,6 @@ public class TerremotoService extends Service {
 	public static final String NUOVO_TERREMOTO = "Nuovo_Terremoto";
 	public static final String TERREMOTI_TIMER = "TerremotiTimer";
 	public static String LISTA_TERREMOTI_AGGIORNATA = "net.morettoni.terremoto.nuovi_terremoti";
-	// private Timer updateTimer;
 	private TerremotoLookupTask lastLookup = null;
 	private AlarmManager alarms;
 	private PendingIntent alarmIntent;
@@ -117,12 +116,6 @@ public class TerremotoService extends Service {
 		}
 	}
 
-	// private TimerTask doRefresh = new TimerTask() {
-	// public void run() {
-	// aggiornaTerremoti();
-	// }
-	// };
-
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Context context = getApplicationContext();
@@ -156,7 +149,6 @@ public class TerremotoService extends Service {
 		ContentResolver cr = getContentResolver();
 
 		String w = TerremotoProvider.KEY_ID + " = " + terremoto.getId();
-
 		if (cr.query(TerremotoProvider.CONTENT_URI, null, w, null, null)
 				.getCount() <= 0) {
 			ContentValues values = new ContentValues();
