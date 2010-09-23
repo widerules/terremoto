@@ -13,6 +13,8 @@ import java.util.TimeZone;
 import net.morettoni.a.beans.Terremoto;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -30,9 +32,13 @@ public class TerremotoService extends Service {
 	public static final String NUOVO_TERREMOTO = "Nuovo_Terremoto";
 	public static final String TERREMOTI_TIMER = "TerremotiTimer";
 	public static String LISTA_TERREMOTI_AGGIORNATA = "net.morettoni.terremoto.nuovi_terremoti";
+	public static final int NOTIFICATION_ID = 1;
 	private TerremotoLookupTask lastLookup = null;
 	private AlarmManager alarms;
 	private PendingIntent alarmIntent;
+	private Notification terremotoNotification;
+	private long lastNotifiedEventDate = 0L;
+	private int minMag = 3;
 
 	@Override
 	public void onCreate() {
@@ -40,6 +46,9 @@ public class TerremotoService extends Service {
 
 		Intent intentToFire = new Intent(TerremotoAlarmReceiver.TERREMOTI_ALARM);
 		alarmIntent = PendingIntent.getBroadcast(this, 0, intentToFire, 0);
+
+		terremotoNotification = new Notification(R.drawable.icon,
+				"Nuovo terremoto!", System.currentTimeMillis());
 	}
 
 	private class TerremotoLookupTask extends AsyncTask<Void, Terremoto, Void> {
@@ -101,12 +110,39 @@ public class TerremotoService extends Service {
 
 		@Override
 		protected void onProgressUpdate(Terremoto... values) {
-			/*
-			 * Context context = getApplicationContext(); String expandedTitle =
-			 * String.format("%s: %.1f", values[0] .getLuogo(),
-			 * values[0].getMagnitude()); Toast.makeText(context, expandedTitle,
-			 * Toast.LENGTH_SHORT).show();
-			 */
+			Terremoto terremoto = values[0];
+			if (terremoto.getData().getTime() > lastNotifiedEventDate && terremoto.getMagnitude() >= minMag) {
+				lastNotifiedEventDate = terremoto.getData().getTime();
+
+				String svcName = Context.NOTIFICATION_SERVICE;
+				NotificationManager notificationManager;
+				notificationManager = (NotificationManager) getSystemService(svcName);
+
+				Context context = getApplicationContext();
+				SimpleDateFormat df = new SimpleDateFormat(
+						"dd/MM/yyyy hh:mm:ss");
+				String dateText = df.format(terremoto.getData());
+				String titleText = String.format("%s: %.1f", terremoto
+						.getLuogo(), terremoto.getMagnitude());
+				Intent startActivityIntent = new Intent(TerremotoService.this,
+						TerremotoActivity.class);
+				PendingIntent launchIntent = PendingIntent.getActivity(context,
+						0, startActivityIntent, 0);
+
+				terremotoNotification.tickerText = titleText;
+				terremotoNotification.setLatestEventInfo(context,
+						titleText, dateText, launchIntent);
+				terremotoNotification.when = java.lang.System
+						.currentTimeMillis();
+				terremotoNotification.defaults = Notification.DEFAULT_SOUND |
+					Notification.DEFAULT_LIGHTS;
+				
+				long[] vibrate = new long[] { 1000, 500, 1000 };
+				terremotoNotification.vibrate = vibrate;
+
+				notificationManager.notify(NOTIFICATION_ID,
+						terremotoNotification);
+			}
 		}
 
 		@Override
@@ -122,9 +158,10 @@ public class TerremotoService extends Service {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		int updateFreq = Integer.parseInt(prefs.getString("PREF_UPDATE_FREQ",
-				"30"));
+			"30"));
+		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
 		boolean autoUpdate = prefs.getBoolean("PREF_AUTO_UPDATE", true);
-		
+
 		if (autoUpdate) {
 			int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
 			long timeToRefresh = SystemClock.elapsedRealtime() + updateFreq

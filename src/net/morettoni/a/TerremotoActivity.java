@@ -5,6 +5,7 @@ import java.util.Date;
 
 import net.morettoni.a.beans.Terremoto;
 
+import android.app.NotificationManager;
 import android.app.TabActivity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -34,10 +35,12 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 	private TabHost tabHost;
 	private TerremotoReceiver receiver;
 	private int minMag = 3;
+    private NotificationManager notificationManager;
 
 	public class TerremotoReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
 			updateEvents();
 		}
 	}
@@ -49,6 +52,8 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 		receiver = new TerremotoReceiver();
 		registerReceiver(receiver, filter);
 
+		notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
+		
 		updateEvents();
 		super.onResume();
 	}
@@ -102,6 +107,9 @@ public class TerremotoActivity extends TabActivity implements OnSharedPreference
 		prefs.registerOnSharedPreferenceChangeListener(this);
 		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
 
+	    String svcName = Context.NOTIFICATION_SERVICE;
+	    notificationManager = (NotificationManager)getSystemService(svcName);
+		
 		updateEvents();
 		startService(new Intent(this, TerremotoService.class));
 	}

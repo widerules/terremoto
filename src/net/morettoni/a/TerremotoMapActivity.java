@@ -1,6 +1,7 @@
 package net.morettoni.a;
 
 import net.morettoni.a.beans.Terremoto;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,12 +13,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.MapView.LayoutParams;
@@ -28,14 +27,16 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	private TerremotiReceiver terremotiReceiver;
 	private CenterTerremotoReceiver centerTerremotiReceiver;
 	private MapView mapView;
-	private MapController mc;
 	private MyLocationOverlay myLocationOverlay;
 	private TerremotoItemizedOverlay terremotoItemizedOverlay;
 	private int minMag = 3;
 	private int maxPins = 10;
+	private NotificationManager notificationManager;
 
 	public class TerremotiReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
+			notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
+			
 			refreshTerremoti();
 			MapView mapView = (MapView) findViewById(R.id.terremotiMap);
 			mapView.invalidate();
@@ -69,7 +70,6 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 				null, null);
 
 		mapView = (MapView) findViewById(R.id.terremotiMap);
-		mc = mapView.getController();
 
 		myLocationOverlay = new MyLocationOverlay(this, mapView);
 		myLocationOverlay.enableCompass();
@@ -95,6 +95,9 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 		mapView.displayZoomControls(true);
 		mapView.setSatellite(true);
 		mapView.getController().setZoom(7);
+		
+	    String svcName = Context.NOTIFICATION_SERVICE;
+	    notificationManager = (NotificationManager)getSystemService(svcName);		
 
 		refreshTerremoti();
 		mapView.invalidate();
@@ -143,20 +146,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 			} while (terremotiCursor.moveToNext() && pins > 0);
 		}
 	}	
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_3:
-			mc.zoomIn();
-			break;
-		case KeyEvent.KEYCODE_1:
-			mc.zoomOut();
-			break;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
+	
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
@@ -166,6 +156,8 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	public void onResume() {
 		terremotiCursor.requery();
 
+		notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
+		
 		IntentFilter filter;
 		filter = new IntentFilter(TerremotoService.NUOVO_TERREMOTO);
 		terremotiReceiver = new TerremotiReceiver();
