@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
-import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.MapView.LayoutParams;
 
 public class TerremotoMapActivity extends MapActivity implements OnSharedPreferenceChangeListener {
@@ -27,7 +26,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	private TerremotiReceiver terremotiReceiver;
 	private CenterTerremotoReceiver centerTerremotiReceiver;
 	private MapView mapView;
-	private MyLocationOverlay myLocationOverlay;
+	private FixMyLocationOverlay myLocationOverlay;
 	private TerremotoItemizedOverlay terremotoItemizedOverlay;
 	private int minMag = 3;
 	private int maxPins = 10;
@@ -71,7 +70,7 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 
 		mapView = (MapView) findViewById(R.id.terremotiMap);
 
-		myLocationOverlay = new MyLocationOverlay(this, mapView);
+		myLocationOverlay = new FixMyLocationOverlay(this, mapView);
 		myLocationOverlay.enableCompass();
 		myLocationOverlay.enableMyLocation();
 		
