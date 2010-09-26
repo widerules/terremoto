@@ -70,7 +70,7 @@ public class TerremotoService extends Service {
 					Terremoto terremoto;
 					boolean firstLine = true;
 					SimpleDateFormat df = new SimpleDateFormat(
-							"dd/MM/yyyy hh:mm:ss");
+							"dd/MM/yyyy HH:mm:ss");
 
 					while ((str = in.readLine()) != null) {
 						if (firstLine) {
@@ -119,8 +119,7 @@ public class TerremotoService extends Service {
 				notificationManager = (NotificationManager) getSystemService(svcName);
 
 				Context context = getApplicationContext();
-				SimpleDateFormat df = new SimpleDateFormat(
-						"dd/MM/yyyy hh:mm:ss");
+				SimpleDateFormat df = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 				String dateText = df.format(terremoto.getData());
 				String titleText = String.format("%s: %.1f", terremoto
 						.getLuogo(), terremoto.getMagnitude());
