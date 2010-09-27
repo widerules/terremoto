@@ -33,8 +33,8 @@ public final class R {
         public static final int layout_zoom=0x7f080006;
         public static final int preference=0x7f080008;
         public static final int refresh=0x7f080007;
-        public static final int rowDate=0x7f080004;
-        public static final int rowDeep=0x7f080003;
+        public static final int rowDate=0x7f080003;
+        public static final int rowDeep=0x7f080004;
         public static final int rowMag=0x7f080001;
         public static final int rowPlace=0x7f080002;
         public static final int terremotiList=0x7f080000;
@@ -51,7 +51,7 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f060000;
         public static final int feed=0x7f060003;
-        /**   debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string> 
+        /**  debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string> 
          */
         public static final int map_key=0x7f060004;
         public static final int preference=0x7f060002;

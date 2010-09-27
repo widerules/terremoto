@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content">
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
 	<TextView android:id="@+id/rowMag" 
 		android:layout_width="wrap_content"
 		android:layout_height="fill_parent"
 		
-		android:layout_alignParentTop="true"
-		android:layout_centerVertical="true"
+		android:paddingLeft="5px"
+		android:paddingRight="5px"
 
-		android:paddingLeft="10px"
-		android:paddingRight="10px"
+		android:gravity="center_vertical"
 
 		android:textStyle="bold"
 		android:textAppearance="@android:style/TextAppearance.Large" />
-	
-	<TextView android:id="@+id/rowPlace"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:textStyle="bold"
-
-		android:layout_toRightOf="@id/rowMag"
- 		android:layout_alignParentRight="true"
-		android:layout_alignParentTop="true" />
-
-	<TextView android:id="@+id/rowDeep" 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" 
 		
-		android:layout_below="@id/rowPlace"
-    	android:layout_alignParentRight="true" />
-
-	<TextView android:id="@+id/rowDate"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		
-		android:layout_toRightOf="@id/rowMag"
-		android:layout_toLeftOf="@id/rowDeep"
-        android:layout_alignTop="@id/rowDeep" />
-
-</RelativeLayout>
+		<LinearLayout
+			android:orientation="vertical"
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent">
+    		<TextView android:id="@+id/rowPlace"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:textStyle="bold" />
+    		<LinearLayout
+				android:orientation="horizontal"
+    			android:layout_width="fill_parent"
+    			android:layout_height="fill_parent">
+    			<TextView android:id="@+id/rowDate"
+    				android:gravity="left"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+    			<TextView android:id="@+id/rowDeep" 
+					android:layout_weight="1"
+					android:gravity="right"
+					android:paddingLeft="5px"
+					android:paddingRight="5px"					
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+    		</LinearLayout>
+		</LinearLayout>
+</LinearLayout>
