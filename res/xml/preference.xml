@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-  <CheckBoxPreference
-    android:key="PREF_AUTO_UPDATE"
-    android:title="Aggiornamento automatico"
-    android:summary="Aggiorna gli eventi sismici automaticamente" 
-    android:defaultValue="true"
-  />                        
+	<CheckBoxPreference
+    	android:key="PREF_AUTO_UPDATE"
+    	android:title="Aggiornamento automatico"
+    	android:summary="Aggiorna gli eventi sismici automaticamente" 
+    	android:defaultValue="true" />                        
 	<ListPreference android:key="PREF_UPDATE_FREQ"
 		android:dependency="PREF_AUTO_UPDATE"
-		android:title="Frequenza di aggiornamento"
+		android:title="Frequenza aggiornamento"
 		android:summary="Frequenza con cui aggiornare la lista degli eventi"
 		android:entries="@array/update_freq_options"
 		android:entryValues="@array/update_freq_values"
@@ -28,4 +27,9 @@
 		android:entryValues="@array/pins"
 		android:dialogTitle="Numero eventi"
 		android:defaultValue="10" />
+	<CheckBoxPreference
+    	android:key="PREF_VIBRATE"
+    	android:title="Usa vibrazione"
+    	android:summary="Emette una vibrazione alla ricezione di un nuovo evento" 
+    	android:defaultValue="true" />		
 </PreferenceScreen>

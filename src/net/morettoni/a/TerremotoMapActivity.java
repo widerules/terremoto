@@ -124,6 +124,10 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	}
 	
 	private void refreshTerremoti() {
+		if (terremotiCursor.isClosed()) {
+			return;
+		}
+		
 		Terremoto terremoto;
 		double mag;
 		int pins = maxPins;

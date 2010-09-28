@@ -22,12 +22,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-public class TerremotoService extends Service {
+public class TerremotoService extends Service implements
+		OnSharedPreferenceChangeListener {
 
 	public static final String NUOVO_TERREMOTO = "Nuovo_Terremoto";
 	public static final String TERREMOTI_TIMER = "TerremotiTimer";
@@ -39,6 +41,7 @@ public class TerremotoService extends Service {
 	private Notification terremotoNotification;
 	private long lastNotifiedEventDate = 0L;
 	private int minMag = 3;
+	private boolean vibrateNotify = true;
 
 	@Override
 	public void onCreate() {
@@ -54,7 +57,6 @@ public class TerremotoService extends Service {
 	private class TerremotoLookupTask extends AsyncTask<Void, Terremoto, Void> {
 		@Override
 		protected Void doInBackground(Void... params) {
-
 			String feed = getString(R.string.feed);
 			try {
 				URL url = new URL(feed);
@@ -111,7 +113,8 @@ public class TerremotoService extends Service {
 		@Override
 		protected void onProgressUpdate(Terremoto... values) {
 			Terremoto terremoto = values[0];
-			if (terremoto.getData().getTime() > lastNotifiedEventDate && terremoto.getMagnitude() >= minMag) {
+			if (terremoto.getData().getTime() > lastNotifiedEventDate
+					&& terremoto.getMagnitude() >= minMag) {
 				lastNotifiedEventDate = terremoto.getData().getTime();
 
 				String svcName = Context.NOTIFICATION_SERVICE;
@@ -129,15 +132,19 @@ public class TerremotoService extends Service {
 						0, startActivityIntent, 0);
 
 				terremotoNotification.tickerText = titleText;
-				terremotoNotification.setLatestEventInfo(context,
-						titleText, dateText, launchIntent);
+				terremotoNotification.setLatestEventInfo(context, titleText,
+						dateText, launchIntent);
 				terremotoNotification.when = java.lang.System
 						.currentTimeMillis();
-				terremotoNotification.defaults = Notification.DEFAULT_SOUND |
-					Notification.DEFAULT_LIGHTS;
-				
-				long[] vibrate = new long[] { 1000, 500, 1000 };
-				terremotoNotification.vibrate = vibrate;
+				terremotoNotification.defaults = Notification.DEFAULT_SOUND
+						| Notification.DEFAULT_LIGHTS;
+
+				if (vibrateNotify) {
+					long[] vibrate = new long[] { 1000, 500, 1000 };
+					terremotoNotification.vibrate = vibrate;
+				} else {
+					terremotoNotification.vibrate = null;
+				}
 
 				notificationManager.notify(NOTIFICATION_ID,
 						terremotoNotification);
@@ -156,10 +163,20 @@ public class TerremotoService extends Service {
 		Context context = getApplicationContext();
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
+		prefs.registerOnSharedPreferenceChangeListener(this);
+		updatePreferences(prefs);
+
+		aggiornaTerremoti();
+
+		return Service.START_NOT_STICKY;
+	}
+
+	private void updatePreferences(SharedPreferences prefs) {
 		int updateFreq = Integer.parseInt(prefs.getString("PREF_UPDATE_FREQ",
-			"30"));
+				"30"));
 		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
 		boolean autoUpdate = prefs.getBoolean("PREF_AUTO_UPDATE", true);
+		vibrateNotify = prefs.getBoolean("PREF_VIBRATE", true);
 
 		if (autoUpdate) {
 			int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
@@ -170,11 +187,7 @@ public class TerremotoService extends Service {
 		} else {
 			alarms.cancel(alarmIntent);
 		}
-
-		aggiornaTerremoti();
-
-		return Service.START_NOT_STICKY;
-	};
+	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -226,5 +239,11 @@ public class TerremotoService extends Service {
 			lastLookup = new TerremotoLookupTask();
 			lastLookup.execute((Void[]) null);
 		}
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		updatePreferences(sharedPreferences);
 	}
 }
