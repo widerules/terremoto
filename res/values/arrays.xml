@@ -42,4 +42,22 @@
 		<item>15</item>
 		<item>30</item>
 	</string-array>	
+	<string-array name="distance_options">
+		<item>Qualsiasi</item>
+		<item>100km</item>
+		<item>150km</item>
+		<item>200km</item>
+		<item>500km</item>
+		<item>1000km</item>
+		<item>2000km</item>
+	</string-array>
+	<string-array name="distance">
+		<item>0</item>
+		<item>100</item>
+		<item>150</item>
+		<item>200</item>
+		<item>500</item>
+		<item>1000</item>
+		<item>2000</item>
+	</string-array>	
 </resources>
