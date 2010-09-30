@@ -39,6 +39,7 @@ public class TerremotoService extends Service implements
 	public static final String TERREMOTI_TIMER = "TerremotiTimer";
 	public static String LISTA_TERREMOTI_AGGIORNATA = "net.morettoni.terremoto.nuovi_terremoti";
 	public static final int NOTIFICATION_ID = 1;
+	private static final long POSITION_UPDATE_FREQ = 15L * 60L * 1000L;
 	private TerremotoLookupTask lastLookup = null;
 	private AlarmManager alarms;
 	private PendingIntent alarmIntent;
@@ -207,8 +208,10 @@ public class TerremotoService extends Service implements
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationManager.removeUpdates(this);
 		if (maxDist > 0) {
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 2500, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 2500, this);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
+					POSITION_UPDATE_FREQ, 2500, this);
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
+					POSITION_UPDATE_FREQ, 2500, this);
 			
 			currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			if (currentLocation == null)
