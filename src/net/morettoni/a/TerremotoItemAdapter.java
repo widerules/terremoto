@@ -7,6 +7,7 @@ import java.util.Date;
 import net.morettoni.a.R;
 import net.morettoni.a.beans.Terremoto;
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class TerremotoItemAdapter extends ArrayAdapter<Terremoto> {
-	int resource;
+	private int resource;
+	private Location currentLocation;
 
 	public TerremotoItemAdapter(Context _context, int _resource, ArrayList<Terremoto> terremotiList) {
 		super(_context, _resource, terremotiList);
 		resource = _resource;
+	}
+	
+	public void setCurrentLocation(Location location) {
+		currentLocation = location;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -37,6 +43,7 @@ public class TerremotoItemAdapter extends ArrayAdapter<Terremoto> {
 		TextView luogoView = (TextView) terremotoView.findViewById(R.id.rowPlace);
 		TextView magView = (TextView) terremotoView.findViewById(R.id.rowMag);
 		TextView deepView = (TextView) terremotoView.findViewById(R.id.rowDeep);
+		TextView distView = (TextView) terremotoView.findViewById(R.id.rowDistance);
 		
 		Terremoto terremoto = getItem(position);
 		Date dataEvento = terremoto.getData();
@@ -46,6 +53,17 @@ public class TerremotoItemAdapter extends ArrayAdapter<Terremoto> {
 		luogoView.setText(terremoto.getLuogo());
 		magView.setText(String.format("%.1f", terremoto.getMagnitude()));
 		deepView.setText(String.format("%.1fkm", terremoto.getProfondita()));
+		
+		if (currentLocation == null) {
+			distView.setText("");
+		} else {
+			Location event = new Location("dummy");
+			event.setLatitude(terremoto.getLatitudine());
+			event.setLongitude(terremoto.getLongitudine());
+
+			distView.setText(String.format("dist. %.0fkm", event.distanceTo(currentLocation) / 1000.0F));
+		}
+		
 		return terremotoView;
 	}
 }

@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.TimeZone;
 
 import net.morettoni.a.beans.Terremoto;
@@ -39,7 +40,7 @@ public class TerremotoService extends Service implements
 	public static final String TERREMOTI_TIMER = "TerremotiTimer";
 	public static String LISTA_TERREMOTI_AGGIORNATA = "net.morettoni.terremoto.nuovi_terremoti";
 	public static final int NOTIFICATION_ID = 1;
-	private static final long POSITION_UPDATE_FREQ = 15L * 60L * 1000L;
+	private static final long LOCATION_UPDATE_FREQ = 15L * 60L * 1000L;
 	private TerremotoLookupTask lastLookup = null;
 	private AlarmManager alarms;
 	private PendingIntent alarmIntent;
@@ -121,17 +122,17 @@ public class TerremotoService extends Service implements
 		@Override
 		protected void onProgressUpdate(Terremoto... values) {
 			Terremoto terremoto = values[0];
-			
+
 			if (terremoto.getData().getTime() > lastNotifiedEventDate
-					&& terremoto.getMagnitude() >= minMag) {				
+					&& terremoto.getMagnitude() >= minMag) {
 				float distance = -1.0F;
 				if (currentLocation != null && maxDist > 0) {
 					Location event = new Location("dummy");
 					event.setLatitude(terremoto.getLatitudine());
 					event.setLongitude(terremoto.getLongitudine());
-					
+
 					distance = event.distanceTo(currentLocation) / 1000.0F;
-					
+
 					if (maxDist > 0 && distance < maxDist)
 						return;
 				}
@@ -146,11 +147,12 @@ public class TerremotoService extends Service implements
 				String dateText = df.format(terremoto.getData());
 				String titleText;
 				if (distance < 0)
-					titleText = String.format("%s: %.1f", terremoto
-						.getLuogo(), terremoto.getMagnitude());
+					titleText = String.format("%s: %.1f", terremoto.getLuogo(),
+							terremoto.getMagnitude());
 				else
-					titleText = String.format("%s: %.1f (dist. %.0fkm)", terremoto
-							.getLuogo(), terremoto.getMagnitude(), distance);
+					titleText = String.format("%s: %.1f (dist. %.0fkm)",
+							terremoto.getLuogo(), terremoto.getMagnitude(),
+							distance);
 				Intent startActivityIntent = new Intent(TerremotoService.this,
 						TerremotoActivity.class);
 				PendingIntent launchIntent = PendingIntent.getActivity(context,
@@ -189,7 +191,7 @@ public class TerremotoService extends Service implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		prefs.registerOnSharedPreferenceChangeListener(this);
-				
+
 		updatePreferences(prefs);
 
 		aggiornaTerremoti();
@@ -198,34 +200,41 @@ public class TerremotoService extends Service implements
 	}
 
 	private void updatePreferences(SharedPreferences prefs) {
-		updateFreq = Integer.parseInt(prefs.getString("PREF_UPDATE_FREQ",
-				"30")) * 60L * 1000L;
+		updateFreq = Integer
+				.parseInt(prefs.getString("PREF_UPDATE_FREQ", "30")) * 60L * 1000L;
 		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
 		boolean autoUpdate = prefs.getBoolean("PREF_AUTO_UPDATE", true);
 		vibrateNotify = prefs.getBoolean("PREF_VIBRATE", true);
 		maxDist = Integer.parseInt(prefs.getString("PREF_MAX_DIST", "200"));
-		
+
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationManager.removeUpdates(this);
 		if (maxDist > 0) {
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-					POSITION_UPDATE_FREQ, 2500, this);
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
-					POSITION_UPDATE_FREQ, 2500, this);
-			
-			currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			if (currentLocation == null)
-				currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			List<String> providers = locationManager.getProviders(true);
+			int providersCount = providers.size();
+			for (int i = 0; i < providersCount; i++) {
+				String providerName = providers.get(i);
+				if (locationManager.isProviderEnabled(providerName)) {
+					updateLocation(locationManager
+							.getLastKnownLocation(providerName));
+				}
+				locationManager.requestLocationUpdates(providerName,
+						LOCATION_UPDATE_FREQ, 2500L, this);
+			}
 		}
-		
+
 		if (autoUpdate) {
 			int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
 			long timeToRefresh = SystemClock.elapsedRealtime() + updateFreq;
-			alarms.setRepeating(alarmType, timeToRefresh,
-					updateFreq, alarmIntent);
+			alarms.setRepeating(alarmType, timeToRefresh, updateFreq,
+					alarmIntent);
 		} else {
 			alarms.cancel(alarmIntent);
 		}
+	}
+
+	public void updateLocation(Location location) {
+		currentLocation = LocationHelper.getBestLocation(currentLocation, location, LOCATION_UPDATE_FREQ);
 	}
 
 	@Override
@@ -288,15 +297,18 @@ public class TerremotoService extends Service implements
 
 	@Override
 	public void onLocationChanged(Location location) {
-		currentLocation = location;
+		updateLocation(location);
 	}
 
 	@Override
-	public void onProviderDisabled(String provider) {}
+	public void onProviderDisabled(String provider) {
+	}
 
 	@Override
-	public void onProviderEnabled(String provider) {}
+	public void onProviderEnabled(String provider) {
+	}
 
 	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {}
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+	}
 }

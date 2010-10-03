@@ -32,20 +32,23 @@ public final class R {
         public static final int map_tab_unselected=0x7f020008;
     }
     public static final class id {
-        public static final int layout_zoom=0x7f080006;
-        public static final int preference=0x7f080008;
-        public static final int refresh=0x7f080007;
-        public static final int rowDate=0x7f080003;
+        public static final int dettagliTerremoto=0x7f080000;
+        public static final int layout_zoom=0x7f080008;
+        public static final int preference=0x7f08000a;
+        public static final int refresh=0x7f080009;
+        public static final int rowDate=0x7f080005;
         public static final int rowDeep=0x7f080004;
-        public static final int rowMag=0x7f080001;
-        public static final int rowPlace=0x7f080002;
-        public static final int terremotiList=0x7f080000;
-        public static final int terremotiMap=0x7f080005;
+        public static final int rowDistance=0x7f080006;
+        public static final int rowMag=0x7f080002;
+        public static final int rowPlace=0x7f080003;
+        public static final int terremotiList=0x7f080001;
+        public static final int terremotiMap=0x7f080007;
     }
     public static final class layout {
-        public static final int main=0x7f030000;
-        public static final int terremotoitem=0x7f030001;
-        public static final int terremotomap=0x7f030002;
+        public static final int dettagli=0x7f030000;
+        public static final int main=0x7f030001;
+        public static final int terremotoitem=0x7f030002;
+        public static final int terremotomap=0x7f030003;
     }
     public static final class menu {
         public static final int options=0x7f070000;
