@@ -19,8 +19,7 @@ public class Terremoto {
 	public GeoPoint getGeoPoint() {
 		Double lat = latitudine * 1E6;
 		Double lng = longitudine * 1E6;
-			
-		return new GeoPoint(lng.intValue(), lat.intValue());
+		return new GeoPoint(lat.intValue(), lng.intValue());
 	}
 	
 	public Date getData() {

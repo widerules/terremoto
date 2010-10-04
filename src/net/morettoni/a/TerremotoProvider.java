@@ -24,7 +24,7 @@ public class TerremotoProvider extends ContentProvider {
 	private SQLiteDatabase terremotiDB;
 
 	private static final String DB_NAME = "terremoti.db";
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 2;
 	private static final String TERREMOTO_TABLE = "terremoti";
 
 	static {
@@ -45,8 +45,8 @@ public class TerremotoProvider extends ContentProvider {
 
 	public static final int ID_COLUMN = 0;
 	public static final int DATA_COLUMN = 1;
-	public static final int LONGITUDE_COLUMN = 2;
-	public static final int LATITUDE_COLUMN = 3;
+	public static final int LATITUDE_COLUMN = 2;
+	public static final int LONGITUDE_COLUMN = 3;
 	public static final int MAGNITUDE_COLUMN = 4;
 	public static final int WHERE_COLUMN = 5;
 	public static final int DEEP_COLUMN = 6;

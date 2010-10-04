@@ -42,6 +42,7 @@ public class TerremotoActivity extends TabActivity implements
 		OnSharedPreferenceChangeListener, LocationListener {
 	private static final long LOCATION_UPDATE_FREQ = 15L * 60L * 1000L;
 	private static final int DETTAGLI_DIALOG = 1;
+	private static final int INFO_DIALOG = 2;
 	private ListView terremotiView;
 	private ArrayList<Terremoto> terremotiList;
 	private TerremotoItemAdapter terremotiItems;
@@ -49,6 +50,7 @@ public class TerremotoActivity extends TabActivity implements
 	private TabHost tabHost;
 	private TerremotoReceiver receiver;
 	private int minMag = 3;
+	private boolean trackLocation = false;
 	private NotificationManager notificationManager;
 	private Location currentLocation;
 
@@ -58,27 +60,6 @@ public class TerremotoActivity extends TabActivity implements
 			notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
 			updateEvents();
 		}
-	}
-
-	@Override
-	public void onResume() {
-		IntentFilter filter;
-		filter = new IntentFilter(TerremotoService.LISTA_TERREMOTI_AGGIORNATA);
-		receiver = new TerremotoReceiver();
-		registerReceiver(receiver, filter);
-
-		notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
-
-		enableLocationTrack();
-		updateEvents();
-		super.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		unregisterReceiver(receiver);
-		disableLocationTrack();
-		super.onPause();
 	}
 
 	@Override
@@ -137,19 +118,54 @@ public class TerremotoActivity extends TabActivity implements
 		String svcName = Context.NOTIFICATION_SERVICE;
 		notificationManager = (NotificationManager) getSystemService(svcName);
 
-		enableLocationTrack();
+		trackLocation = prefs.getBoolean("PREF_TRACK_LOCATION", false);
+		if (trackLocation)
+			enableLocationTrack();
 		startService(new Intent(this, TerremotoService.class));
 		updateEvents();
 	}
 
 	@Override
+	public void onResume() {
+		IntentFilter filter;
+		filter = new IntentFilter(TerremotoService.LISTA_TERREMOTI_AGGIORNATA);
+		receiver = new TerremotoReceiver();
+		registerReceiver(receiver, filter);
+
+		notificationManager.cancel(TerremotoService.NOTIFICATION_ID);
+
+		if (trackLocation)
+			enableLocationTrack();
+		updateEvents();
+		super.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		unregisterReceiver(receiver);
+		disableLocationTrack();
+		super.onPause();
+	}
+
+	@Override
 	public Dialog onCreateDialog(int id) {
+		LayoutInflater li;
+		View dettagliView;
+		AlertDialog.Builder dettagliDialog;
+		
 		switch (id) {
-		case (DETTAGLI_DIALOG):
-			LayoutInflater li = LayoutInflater.from(this);
-			View dettagliView = li.inflate(R.layout.dettagli, null);
-			AlertDialog.Builder dettagliDialog = new AlertDialog.Builder(this);
+		case DETTAGLI_DIALOG:
+			li = LayoutInflater.from(this);
+			dettagliView = li.inflate(R.layout.dettagli, null);
+			dettagliDialog = new AlertDialog.Builder(this);
 			dettagliDialog.setTitle("?");
+			dettagliDialog.setView(dettagliView);
+			return dettagliDialog.create();
+		case INFO_DIALOG:
+			li = LayoutInflater.from(this);
+			dettagliView = li.inflate(R.layout.dettagli, null);
+			dettagliDialog = new AlertDialog.Builder(this);
+			dettagliDialog.setTitle("Terremoto!");
 			dettagliDialog.setView(dettagliView);
 			return dettagliDialog.create();
 		}
@@ -158,29 +174,46 @@ public class TerremotoActivity extends TabActivity implements
 
 	@Override
 	public void onPrepareDialog(int id, Dialog dialog) {
+		AlertDialog dettagliDialog;
+		TextView tv;
+		
 		switch (id) {
-		case (DETTAGLI_DIALOG):
+		case INFO_DIALOG:
+			dettagliDialog = (AlertDialog) dialog;
+			tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
+			String version = getString(R.string.version);
+			String info = getString(R.string.info_text);
+			tv.setText(String.format(info, version));
+			break;
+		case DETTAGLI_DIALOG:
 			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 			StringBuilder dettagli = new StringBuilder();
+			dettagli.append("Data evento: ");
 			dettagli.append(sdf.format(selectedTerremoto.getData()));
-			dettagli.append(String.format("\nMagnitudine: %.1f\n", selectedTerremoto.getMagnitude()));
-			dettagli.append(String.format("Profondità: %.1fkm\n", selectedTerremoto.getProfondita()));
-			
+			dettagli.append(String.format("\nMagnitudine: %.1f\n",
+					selectedTerremoto.getMagnitude()));
+			dettagli.append(String.format("Profondità: %.1fkm\n",
+					selectedTerremoto.getProfondita()));
+			dettagli.append(String.format(
+					"Posizione: %.3f (lat) %.3f (lon)\n", 
+						selectedTerremoto.getLatitudine(), 
+						selectedTerremoto.getLongitudine()));
+
 			if (currentLocation != null) {
-				Location event = new Location("dummy");
+				Location event = new Location(currentLocation);
 				event.setLatitude(selectedTerremoto.getLatitudine());
 				event.setLongitude(selectedTerremoto.getLongitudine());
 
-				dettagli.append(String.format("Distanza: %.0fkm\n", event.distanceTo(currentLocation) / 1000.0F));
+				dettagli.append(String.format("Distanza: %.0fkm\n", (event
+						.distanceTo(currentLocation) / 1000.0F)));
 			}
 			dettagli.append("\nhttp://cnt.rm.ingv.it/data_id/");
 			dettagli.append(selectedTerremoto.getId());
 			dettagli.append("/event.php");
-			
-			AlertDialog dettagliDialog = (AlertDialog) dialog;
+
+			dettagliDialog = (AlertDialog) dialog;
 			dettagliDialog.setTitle(selectedTerremoto.getLuogo());
-			TextView tv = (TextView) dettagliDialog
-					.findViewById(R.id.dettagliTerremoto);
+			tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
 			tv.setText(dettagli.toString());
 			break;
 		}
@@ -212,6 +245,9 @@ public class TerremotoActivity extends TabActivity implements
 			Intent startIntent = new Intent(context, TerremotoService.class);
 			context.startService(startIntent);
 			return true;
+		case R.id.info:
+			showDialog(INFO_DIALOG);
+			return true;
 		case R.id.preference:
 			Intent settingsActivity = new Intent(context,
 					TerremotoPreference.class);
@@ -232,6 +268,22 @@ public class TerremotoActivity extends TabActivity implements
 				minMag = newMag;
 				updateEvents();
 			}
+		}
+
+		if (key.equals("PREF_TRACK_LOCATION")) {
+			boolean track = sharedPreferences.getBoolean("PREF_TRACK_LOCATION",
+					false);
+			if (!track && trackLocation) {
+				disableLocationTrack();
+				currentLocation = null;
+				terremotiItems.setCurrentLocation(currentLocation);
+				terremotiItems.notifyDataSetChanged();
+			}
+			if (track && !trackLocation) {
+				enableLocationTrack();
+			}
+
+			trackLocation = track;
 		}
 	}
 

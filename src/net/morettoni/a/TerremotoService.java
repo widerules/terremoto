@@ -215,8 +215,10 @@ public class TerremotoService extends Service implements
 			for (int i = 0; i < providersCount; i++) {
 				String providerName = providers.get(i);
 				if (locationManager.isProviderEnabled(providerName)) {
-					updateLocation(locationManager
-							.getLastKnownLocation(providerName));
+					currentLocation = LocationHelper.getBestLocation(
+							currentLocation, 
+							locationManager.getLastKnownLocation(providerName),
+							LOCATION_UPDATE_FREQ);
 				}
 				locationManager.requestLocationUpdates(providerName,
 						LOCATION_UPDATE_FREQ, 2500L, this);
@@ -231,10 +233,6 @@ public class TerremotoService extends Service implements
 		} else {
 			alarms.cancel(alarmIntent);
 		}
-	}
-
-	public void updateLocation(Location location) {
-		currentLocation = LocationHelper.getBestLocation(currentLocation, location, LOCATION_UPDATE_FREQ);
 	}
 
 	@Override
@@ -297,7 +295,7 @@ public class TerremotoService extends Service implements
 
 	@Override
 	public void onLocationChanged(Location location) {
-		updateLocation(location);
+		currentLocation = LocationHelper.getBestLocation(currentLocation, location, LOCATION_UPDATE_FREQ);
 	}
 
 	@Override
