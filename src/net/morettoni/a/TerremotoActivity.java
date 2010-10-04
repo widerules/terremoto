@@ -127,6 +127,7 @@ public class TerremotoActivity extends TabActivity implements
 
 	@Override
 	public void onResume() {
+		super.onResume();
 		IntentFilter filter;
 		filter = new IntentFilter(TerremotoService.LISTA_TERREMOTI_AGGIORNATA);
 		receiver = new TerremotoReceiver();
@@ -137,14 +138,13 @@ public class TerremotoActivity extends TabActivity implements
 		if (trackLocation)
 			enableLocationTrack();
 		updateEvents();
-		super.onResume();
 	}
 
 	@Override
 	public void onPause() {
+		super.onPause();
 		unregisterReceiver(receiver);
 		disableLocationTrack();
-		super.onPause();
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class TerremotoActivity extends TabActivity implements
 		case INFO_DIALOG:
 			dettagliDialog = (AlertDialog) dialog;
 			tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
-			String version = getString(R.string.version);
+			String version = getString(R.string.version_name);
 			String info = getString(R.string.info_text);
 			tv.setText(String.format(info, version));
 			break;

@@ -26,6 +26,7 @@
     	android:summary="Rileva la posizione corrente per stabilire la distanza dall'evento" 
     	android:defaultValue="false" />		
 	<ListPreference android:key="PREF_MAX_DIST"
+		android:dependency="PREF_TRACK_LOCATION"
 		android:title="Distanza dall'evento"
 		android:summary="Notifica solo gli eventi sismici che si verificano entro una certa distanza"
 		android:entries="@array/distance_options"

@@ -64,7 +64,7 @@ public final class R {
         public static final int map_key=0x7f060007;
         public static final int preference=0x7f060005;
         public static final int refresh=0x7f060002;
-        public static final int version=0x7f060000;
+        public static final int version_name=0x7f060000;
     }
     public static final class xml {
         public static final int preference=0x7f040000;
