@@ -181,40 +181,40 @@ public class TerremotoActivity extends TabActivity implements
 		case INFO_DIALOG:
 			dettagliDialog = (AlertDialog) dialog;
 			tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
-			String version = getString(R.string.version_name);
-			String info = getString(R.string.info_text);
-			tv.setText(String.format(info, version));
+			tv.setText(getString(R.string.info_text));
 			break;
 		case DETTAGLI_DIALOG:
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-			StringBuilder dettagli = new StringBuilder();
-			dettagli.append("Data evento: ");
-			dettagli.append(sdf.format(selectedTerremoto.getData()));
-			dettagli.append(String.format("\nMagnitudine: %.1f\n",
-					selectedTerremoto.getMagnitude()));
-			dettagli.append(String.format("Profondità: %.1fkm\n",
-					selectedTerremoto.getProfondita()));
-			dettagli.append(String.format(
-					"Posizione: %.3f (lat) %.3f (lon)\n", 
-						selectedTerremoto.getLatitudine(), 
-						selectedTerremoto.getLongitudine()));
-
-			if (currentLocation != null) {
-				Location event = new Location(currentLocation);
-				event.setLatitude(selectedTerremoto.getLatitudine());
-				event.setLongitude(selectedTerremoto.getLongitudine());
-
-				dettagli.append(String.format("Distanza: %.0fkm\n", (event
-						.distanceTo(currentLocation) / 1000.0F)));
+			if (selectedTerremoto != null) {
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+				StringBuilder dettagli = new StringBuilder();
+				dettagli.append("Data evento: ");
+				dettagli.append(sdf.format(selectedTerremoto.getData()));
+				dettagli.append(String.format("\nMagnitudine: %.1f\n",
+						selectedTerremoto.getMagnitude()));
+				dettagli.append(String.format("Profondità: %.1fkm\n",
+						selectedTerremoto.getProfondita()));
+				dettagli.append(String.format(
+						"Posizione: %.3f (lat) %.3f (lon)\n", 
+							selectedTerremoto.getLatitudine(), 
+							selectedTerremoto.getLongitudine()));
+	
+				if (currentLocation != null) {
+					Location event = new Location(currentLocation);
+					event.setLatitude(selectedTerremoto.getLatitudine());
+					event.setLongitude(selectedTerremoto.getLongitudine());
+	
+					dettagli.append(String.format("Distanza: %.0fkm\n", (event
+							.distanceTo(currentLocation) / 1000.0F)));
+				}
+				dettagli.append("\nhttp://cnt.rm.ingv.it/data_id/");
+				dettagli.append(selectedTerremoto.getId());
+				dettagli.append("/event.php");
+	
+				dettagliDialog = (AlertDialog) dialog;
+				dettagliDialog.setTitle(selectedTerremoto.getLuogo());
+				tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
+				tv.setText(dettagli.toString());
 			}
-			dettagli.append("\nhttp://cnt.rm.ingv.it/data_id/");
-			dettagli.append(selectedTerremoto.getId());
-			dettagli.append("/event.php");
-
-			dettagliDialog = (AlertDialog) dialog;
-			dettagliDialog.setTitle(selectedTerremoto.getLuogo());
-			tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
-			tv.setText(dettagli.toString());
 			break;
 		}
 	}

@@ -133,7 +133,7 @@ public class TerremotoService extends Service implements
 
 					distance = event.distanceTo(currentLocation) / 1000.0F;
 
-					if (maxDist > 0 && distance < maxDist)
+					if (maxDist > 0 && distance > maxDist)
 						return;
 				}
 				lastNotifiedEventDate = terremoto.getData().getTime();
