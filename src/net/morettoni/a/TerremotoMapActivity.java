@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MapView.LayoutParams;
@@ -45,14 +46,17 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 	public class CenterTerremotoReceiver extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
 			Terremoto terremoto = new Terremoto();
-			terremoto.setLatitudine(intent.getDoubleExtra(TerremotoProvider.KEY_LAT, 0.0));
-			terremoto.setLongitudine(intent.getDoubleExtra(TerremotoProvider.KEY_LNG, 0.0));
-			terremoto.setLuogo(intent.getStringExtra(TerremotoProvider.KEY_WHERE));
-			terremoto.setMagnitude(intent.getDoubleExtra(TerremotoProvider.KEY_MAG, 0.0));
+			terremoto.mLatitudine = intent.getDoubleExtra(TerremotoProvider.KEY_LAT, 0.0);
+			terremoto.mLongitudine = intent.getDoubleExtra(TerremotoProvider.KEY_LNG, 0.0);
+			terremoto.mLuogo = intent.getStringExtra(TerremotoProvider.KEY_WHERE);
+			terremoto.mMagnitude = intent.getDoubleExtra(TerremotoProvider.KEY_MAG, 0.0);
 			terremotoItemizedOverlay.addOverlay(terremoto);
 
+			Double lat = terremoto.mLatitudine * 1E6;
+			Double lng = terremoto.mLongitudine * 1E6;
+
 			MapView mapView = (MapView) findViewById(R.id.terremotiMap);
-			mapView.getController().animateTo(terremoto.getGeoPoint());
+			mapView.getController().animateTo(new GeoPoint(lat.intValue(), lng.intValue()));
 			mapView.getController().setZoom(10);
 			mapView.invalidate();
 		}
@@ -139,10 +143,10 @@ public class TerremotoMapActivity extends MapActivity implements OnSharedPrefere
 				mag = terremotiCursor.getDouble(TerremotoProvider.MAGNITUDE_COLUMN);
 				if (mag >= minMag) {
 					terremoto = new Terremoto();
-					terremoto.setLatitudine(terremotiCursor.getFloat(TerremotoProvider.LATITUDE_COLUMN));
-					terremoto.setLongitudine(terremotiCursor.getFloat(TerremotoProvider.LONGITUDE_COLUMN));
-					terremoto.setLuogo(terremotiCursor.getString(TerremotoProvider.WHERE_COLUMN));
-					terremoto.setMagnitude(mag);
+					terremoto.mLatitudine = terremotiCursor.getFloat(TerremotoProvider.LATITUDE_COLUMN);
+					terremoto.mLongitudine = terremotiCursor.getFloat(TerremotoProvider.LONGITUDE_COLUMN);
+					terremoto.mLuogo = terremotiCursor.getString(TerremotoProvider.WHERE_COLUMN);
+					terremoto.mMagnitude = mag;
 					terremotoItemizedOverlay.addOverlay(terremoto);
 					pins--;
 				}

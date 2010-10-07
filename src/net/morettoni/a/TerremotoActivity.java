@@ -185,33 +185,37 @@ public class TerremotoActivity extends TabActivity implements
 			break;
 		case DETTAGLI_DIALOG:
 			if (selectedTerremoto != null) {
+				double lat = selectedTerremoto.mLatitudine;
+				double lon = selectedTerremoto.mLongitudine;
+				double mag = selectedTerremoto.mMagnitude;
+				double deep = selectedTerremoto.mProfondita;
+				Date data = selectedTerremoto.mData;
+				long evId = selectedTerremoto.mId;
+				String luogo = selectedTerremoto.mLuogo;
+				
 				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 				StringBuilder dettagli = new StringBuilder();
 				dettagli.append("Data evento: ");
-				dettagli.append(sdf.format(selectedTerremoto.getData()));
-				dettagli.append(String.format("\nMagnitudine: %.1f\n",
-						selectedTerremoto.getMagnitude()));
-				dettagli.append(String.format("Profondità: %.1fkm\n",
-						selectedTerremoto.getProfondita()));
+				dettagli.append(sdf.format(data));
+				dettagli.append(String.format("\nMagnitudine: %.1f\n", mag));
+				dettagli.append(String.format("Profondità: %.1fkm\n", deep));
 				dettagli.append(String.format(
-						"Posizione: %.3f (lat) %.3f (lon)\n", 
-							selectedTerremoto.getLatitudine(), 
-							selectedTerremoto.getLongitudine()));
+						"Posizione: %.3f (lat) %.3f (lon)\n",  lat, lon));
 	
 				if (currentLocation != null) {
 					Location event = new Location(currentLocation);
-					event.setLatitude(selectedTerremoto.getLatitudine());
-					event.setLongitude(selectedTerremoto.getLongitudine());
+					event.setLatitude(lat);
+					event.setLongitude(lon);
 	
 					dettagli.append(String.format("Distanza: %.0fkm\n", (event
 							.distanceTo(currentLocation) / 1000.0F)));
 				}
 				dettagli.append("\nhttp://cnt.rm.ingv.it/data_id/");
-				dettagli.append(selectedTerremoto.getId());
+				dettagli.append(evId);
 				dettagli.append("/event.php");
 	
 				dettagliDialog = (AlertDialog) dialog;
-				dettagliDialog.setTitle(selectedTerremoto.getLuogo());
+				dettagliDialog.setTitle(luogo);
 				tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
 				tv.setText(dettagli.toString());
 			}
@@ -223,10 +227,10 @@ public class TerremotoActivity extends TabActivity implements
 		tabHost.setCurrentTab(1);
 
 		Intent intent = new Intent(TerremotoMapActivity.CENTER_TERREMOTO);
-		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
-		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());
-		intent.putExtra(TerremotoProvider.KEY_WHERE, terremoto.getLuogo());
-		intent.putExtra(TerremotoProvider.KEY_MAG, terremoto.getMagnitude());
+		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.mLatitudine);
+		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.mLongitudine);
+		intent.putExtra(TerremotoProvider.KEY_WHERE, terremoto.mLuogo);
+		intent.putExtra(TerremotoProvider.KEY_MAG, terremoto.mMagnitude);
 		sendBroadcast(intent);
 	}
 
@@ -326,19 +330,19 @@ public class TerremotoActivity extends TabActivity implements
 			do {
 				if (c.getDouble(TerremotoProvider.MAGNITUDE_COLUMN) >= minMag) {
 					Terremoto terremoto = new Terremoto();
-					terremoto.setId(c.getLong(TerremotoProvider.ID_COLUMN));
-					terremoto.setData(new Date(c
-							.getLong(TerremotoProvider.DATA_COLUMN)));
-					terremoto.setLongitudine(c
-							.getDouble(TerremotoProvider.LONGITUDE_COLUMN));
-					terremoto.setLatitudine(c
-							.getDouble(TerremotoProvider.LATITUDE_COLUMN));
-					terremoto.setMagnitude(c
-							.getDouble(TerremotoProvider.MAGNITUDE_COLUMN));
-					terremoto.setLuogo(c
-							.getString(TerremotoProvider.WHERE_COLUMN));
-					terremoto.setProfondita(c
-							.getDouble(TerremotoProvider.DEEP_COLUMN));
+					terremoto.mId = c.getLong(TerremotoProvider.ID_COLUMN);
+					terremoto.mData = new Date(c
+							.getLong(TerremotoProvider.DATA_COLUMN));
+					terremoto.mLongitudine = c
+							.getDouble(TerremotoProvider.LONGITUDE_COLUMN);
+					terremoto.mLatitudine = c
+							.getDouble(TerremotoProvider.LATITUDE_COLUMN);
+					terremoto.mMagnitude = c
+							.getDouble(TerremotoProvider.MAGNITUDE_COLUMN);
+					terremoto.mLuogo = c
+							.getString(TerremotoProvider.WHERE_COLUMN);
+					terremoto.mProfondita = c
+							.getDouble(TerremotoProvider.DEEP_COLUMN);
 
 					terremotiList.add(terremoto);
 				}

@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -92,18 +93,18 @@ public class TerremotoService extends Service implements
 						event = str.split(",");
 
 						terremoto = new Terremoto();
-						terremoto.setLatitudine(Double.parseDouble(event[0]));
-						terremoto.setLongitudine(Double.parseDouble(event[1]));
-						terremoto.setProfondita(Double.parseDouble(event[2]));
+						terremoto.mLatitudine = Double.parseDouble(event[0]);
+						terremoto.mLongitudine = Double.parseDouble(event[1]);
+						terremoto.mProfondita = Double.parseDouble(event[2]);
 						try {
 							df.setTimeZone(TimeZone.getTimeZone("UTC"));
-							terremoto.setData(df.parse(event[3]));
+							terremoto.mData = df.parse(event[3]);
 							df.setTimeZone(TimeZone.getDefault());
 						} catch (ParseException e) {
 						}
-						terremoto.setMagnitude(Double.parseDouble(event[4]));
-						terremoto.setLuogo(event[5].replaceAll("_", " "));
-						terremoto.setId(Long.parseLong(event[6]));
+						terremoto.mMagnitude = Double.parseDouble(event[4]);
+						terremoto.mLuogo = event[5].replaceAll("_", " ");
+						terremoto.mId = Long.parseLong(event[6]);
 
 						if (aggiungi(terremoto))
 							publishProgress(terremoto);
@@ -122,21 +123,23 @@ public class TerremotoService extends Service implements
 		@Override
 		protected void onProgressUpdate(Terremoto... values) {
 			Terremoto terremoto = values[0];
+			Date data = terremoto.mData;
+			double mag = terremoto.mMagnitude;
 
-			if (terremoto.getData().getTime() > lastNotifiedEventDate
-					&& terremoto.getMagnitude() >= minMag) {
+			if (data.getTime() > lastNotifiedEventDate && mag >= minMag) {
 				float distance = -1.0F;
 				if (currentLocation != null && maxDist > 0) {
 					Location event = new Location("dummy");
-					event.setLatitude(terremoto.getLatitudine());
-					event.setLongitude(terremoto.getLongitudine());
+					event.setLatitude(terremoto.mLatitudine);
+					event.setLongitude(terremoto.mLongitudine);
 
 					distance = event.distanceTo(currentLocation) / 1000.0F;
 
 					if (maxDist > 0 && distance > maxDist)
 						return;
 				}
-				lastNotifiedEventDate = terremoto.getData().getTime();
+				lastNotifiedEventDate = data.getTime();
+				String luogo = terremoto.mLuogo;
 
 				String svcName = Context.NOTIFICATION_SERVICE;
 				NotificationManager notificationManager;
@@ -144,15 +147,13 @@ public class TerremotoService extends Service implements
 
 				Context context = getApplicationContext();
 				SimpleDateFormat df = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-				String dateText = df.format(terremoto.getData());
+				String dateText = df.format(data);
 				String titleText;
 				if (distance < 0)
-					titleText = String.format("%s: %.1f", terremoto.getLuogo(),
-							terremoto.getMagnitude());
+					titleText = String.format("%s: %.1f", luogo, mag);
 				else
 					titleText = String.format("%s: %.1f (dist. %.0fkm)",
-							terremoto.getLuogo(), terremoto.getMagnitude(),
-							distance);
+							luogo, mag, distance);
 				Intent startActivityIntent = new Intent(TerremotoService.this,
 						TerremotoActivity.class);
 				PendingIntent launchIntent = PendingIntent.getActivity(context,
@@ -247,19 +248,18 @@ public class TerremotoService extends Service implements
 	private boolean aggiungi(Terremoto terremoto) {
 		ContentResolver cr = getContentResolver();
 
-		String w = TerremotoProvider.KEY_ID + " = " + terremoto.getId();
+		String w = TerremotoProvider.KEY_ID + " = " + terremoto.mId;
 		if (cr.query(TerremotoProvider.CONTENT_URI, null, w, null, null)
 				.getCount() <= 0) {
 			ContentValues values = new ContentValues();
 
-			values.put(TerremotoProvider.KEY_ID, terremoto.getId());
-			values.put(TerremotoProvider.KEY_DATA, terremoto.getData()
-					.getTime());
-			values.put(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
-			values.put(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());
-			values.put(TerremotoProvider.KEY_MAG, terremoto.getMagnitude());
-			values.put(TerremotoProvider.KEY_WHERE, terremoto.getLuogo());
-			values.put(TerremotoProvider.KEY_DEEP, terremoto.getProfondita());
+			values.put(TerremotoProvider.KEY_ID, terremoto.mId);
+			values.put(TerremotoProvider.KEY_DATA, terremoto.mData.getTime());
+			values.put(TerremotoProvider.KEY_LAT, terremoto.mLatitudine);
+			values.put(TerremotoProvider.KEY_LNG, terremoto.mLongitudine);
+			values.put(TerremotoProvider.KEY_MAG, terremoto.mMagnitude);
+			values.put(TerremotoProvider.KEY_WHERE, terremoto.mLuogo);
+			values.put(TerremotoProvider.KEY_DEEP, terremoto.mProfondita);
 
 			cr.insert(TerremotoProvider.CONTENT_URI, values);
 			nuovoTerremoto(terremoto);
@@ -271,14 +271,13 @@ public class TerremotoService extends Service implements
 
 	private void nuovoTerremoto(Terremoto terremoto) {
 		Intent intent = new Intent(NUOVO_TERREMOTO);
-		intent.putExtra(TerremotoProvider.KEY_ID, terremoto.getId());
-		intent.putExtra(TerremotoProvider.KEY_DATA, terremoto.getData()
-				.getTime());
-		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.getLatitudine());
-		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.getLongitudine());
-		intent.putExtra(TerremotoProvider.KEY_MAG, terremoto.getMagnitude());
-		intent.putExtra(TerremotoProvider.KEY_WHERE, terremoto.getLuogo());
-		intent.putExtra(TerremotoProvider.KEY_DEEP, terremoto.getProfondita());
+		intent.putExtra(TerremotoProvider.KEY_ID, terremoto.mId);
+		intent.putExtra(TerremotoProvider.KEY_DATA, terremoto.mData.getTime());
+		intent.putExtra(TerremotoProvider.KEY_LAT, terremoto.mLatitudine);
+		intent.putExtra(TerremotoProvider.KEY_LNG, terremoto.mLongitudine);
+		intent.putExtra(TerremotoProvider.KEY_MAG, terremoto.mMagnitude);
+		intent.putExtra(TerremotoProvider.KEY_WHERE, terremoto.mLuogo);
+		intent.putExtra(TerremotoProvider.KEY_DEEP, terremoto.mProfondita);
 
 		sendBroadcast(intent);
 	}

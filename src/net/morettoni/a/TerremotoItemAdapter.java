@@ -46,20 +46,20 @@ public class TerremotoItemAdapter extends ArrayAdapter<Terremoto> {
 		TextView distView = (TextView) terremotoView.findViewById(R.id.rowDistance);
 		
 		Terremoto terremoto = getItem(position);
-		Date dataEvento = terremoto.getData();
+		Date dataEvento = terremoto.mData;
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 		
 		dateView.setText(sdf.format(dataEvento));
-		luogoView.setText(terremoto.getLuogo());
-		magView.setText(String.format("%.1f", terremoto.getMagnitude()));
-		deepView.setText(String.format("%.1fkm", terremoto.getProfondita()));
+		luogoView.setText(terremoto.mLuogo);
+		magView.setText(String.format("%.1f", terremoto.mMagnitude));
+		deepView.setText(String.format("%.1fkm", terremoto.mProfondita));
 		
 		if (currentLocation == null) {
 			distView.setText("");
 		} else {
 			Location event = new Location("dummy");
-			event.setLatitude(terremoto.getLatitudine());
-			event.setLongitude(terremoto.getLongitudine());
+			event.setLatitude(terremoto.mLatitudine);
+			event.setLongitude(terremoto.mLongitudine);
 
 			distView.setText(String.format("dist. %.0fkm", event.distanceTo(currentLocation) / 1000.0F));
 		}
