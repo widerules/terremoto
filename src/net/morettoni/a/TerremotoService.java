@@ -63,6 +63,20 @@ public class TerremotoService extends Service implements
 		terremotoNotification = new Notification(R.drawable.icon,
 				"Nuovo terremoto!", System.currentTimeMillis());
 	}
+	
+	@Override
+	public void onDestroy() {
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		List<String> providers = locationManager.getProviders(true);
+		int providersCount = providers.size();
+
+		locationManager.removeUpdates(this);
+		for (int i = 0; i < providersCount; i++) {
+			locationManager.removeUpdates(this);				
+		}
+
+		super.onDestroy();
+	}
 
 	private class TerremotoLookupTask extends AsyncTask<Void, Terremoto, Void> {
 		@Override
@@ -152,8 +166,8 @@ public class TerremotoService extends Service implements
 				if (distance < 0)
 					titleText = String.format("%s: %.1f", luogo, mag);
 				else
-					titleText = String.format("%s: %.1f (dist. %.0fkm)",
-							luogo, mag, distance);
+					titleText = String.format("%s: %.1f (dist. %.0fkm)", luogo,
+							mag, distance);
 				Intent startActivityIntent = new Intent(TerremotoService.this,
 						TerremotoActivity.class);
 				PendingIntent launchIntent = PendingIntent.getActivity(context,
@@ -211,22 +225,25 @@ public class TerremotoService extends Service implements
 			maxDist = 0;
 		else
 			maxDist = Integer.parseInt(prefs.getString("PREF_MAX_DIST", "200"));
-		
+
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		List<String> providers = locationManager.getProviders(true);
+		int providersCount = providers.size();
+
 		locationManager.removeUpdates(this);
-		if (maxDist > 0) {
-			List<String> providers = locationManager.getProviders(true);
-			int providersCount = providers.size();
-			for (int i = 0; i < providersCount; i++) {
+		for (int i = 0; i < providersCount; i++) {
+			if (maxDist > 0) {
 				String providerName = providers.get(i);
 				if (locationManager.isProviderEnabled(providerName)) {
 					currentLocation = LocationHelper.getBestLocation(
-							currentLocation, 
-							locationManager.getLastKnownLocation(providerName),
+							currentLocation, locationManager
+									.getLastKnownLocation(providerName),
 							LOCATION_UPDATE_FREQ);
+					locationManager.requestLocationUpdates(providerName,
+							LOCATION_UPDATE_FREQ, 2500L, this);
 				}
-				locationManager.requestLocationUpdates(providerName,
-						LOCATION_UPDATE_FREQ, 2500L, this);
+			} else {
+				locationManager.removeUpdates(this);				
 			}
 		}
 
@@ -298,7 +315,8 @@ public class TerremotoService extends Service implements
 
 	@Override
 	public void onLocationChanged(Location location) {
-		currentLocation = LocationHelper.getBestLocation(currentLocation, location, LOCATION_UPDATE_FREQ);
+		currentLocation = LocationHelper.getBestLocation(currentLocation,
+				location, LOCATION_UPDATE_FREQ);
 	}
 
 	@Override

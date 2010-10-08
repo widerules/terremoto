@@ -152,7 +152,7 @@ public class TerremotoActivity extends TabActivity implements
 		LayoutInflater li;
 		View dettagliView;
 		AlertDialog.Builder dettagliDialog;
-		
+
 		switch (id) {
 		case DETTAGLI_DIALOG:
 			li = LayoutInflater.from(this);
@@ -176,7 +176,7 @@ public class TerremotoActivity extends TabActivity implements
 	public void onPrepareDialog(int id, Dialog dialog) {
 		AlertDialog dettagliDialog;
 		TextView tv;
-		
+
 		switch (id) {
 		case INFO_DIALOG:
 			dettagliDialog = (AlertDialog) dialog;
@@ -192,7 +192,7 @@ public class TerremotoActivity extends TabActivity implements
 				Date data = selectedTerremoto.mData;
 				long evId = selectedTerremoto.mId;
 				String luogo = selectedTerremoto.mLuogo;
-				
+
 				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 				StringBuilder dettagli = new StringBuilder();
 				dettagli.append("Data evento: ");
@@ -200,23 +200,24 @@ public class TerremotoActivity extends TabActivity implements
 				dettagli.append(String.format("\nMagnitudine: %.1f\n", mag));
 				dettagli.append(String.format("Profondità: %.1fkm\n", deep));
 				dettagli.append(String.format(
-						"Posizione: %.3f (lat) %.3f (lon)\n",  lat, lon));
-	
+						"Posizione: %.3f (lat) %.3f (lon)\n", lat, lon));
+
 				if (currentLocation != null) {
 					Location event = new Location(currentLocation);
 					event.setLatitude(lat);
 					event.setLongitude(lon);
-	
+
 					dettagli.append(String.format("Distanza: %.0fkm\n", (event
 							.distanceTo(currentLocation) / 1000.0F)));
 				}
 				dettagli.append("\nhttp://cnt.rm.ingv.it/data_id/");
 				dettagli.append(evId);
 				dettagli.append("/event.php");
-	
+
 				dettagliDialog = (AlertDialog) dialog;
 				dettagliDialog.setTitle(luogo);
-				tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
+				tv = (TextView) dettagliDialog
+						.findViewById(R.id.dettagliTerremoto);
 				tv.setText(dettagli.toString());
 			}
 			break;
@@ -293,7 +294,15 @@ public class TerremotoActivity extends TabActivity implements
 
 	private void disableLocationTrack() {
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		locationManager.removeUpdates(this);
+		List<String> providers = locationManager.getProviders(true);
+		int providersCount = providers.size();
+
+		for (int i = 0; i < providersCount; i++) {
+			String providerName = providers.get(i);
+			if (locationManager.isProviderEnabled(providerName)) {
+				locationManager.removeUpdates(this);
+			}
+		}
 	}
 
 	private void enableLocationTrack() {
@@ -301,21 +310,22 @@ public class TerremotoActivity extends TabActivity implements
 		List<String> providers = locationManager.getProviders(true);
 		long updateMinTime, updateMinDistance;
 		int providersCount = providers.size();
+
 		for (int i = 0; i < providersCount; i++) {
 			String providerName = providers.get(i);
 			if (locationManager.isProviderEnabled(providerName)) {
 				onLocationChanged(locationManager
 						.getLastKnownLocation(providerName));
+				if (LocationManager.GPS_PROVIDER.equals(providerName)) {
+					updateMinTime = 0L;
+					updateMinDistance = 0L;
+				} else {
+					updateMinTime = LOCATION_UPDATE_FREQ;
+					updateMinDistance = 2500L;
+				}
+				locationManager.requestLocationUpdates(providerName,
+						updateMinTime, updateMinDistance, this);
 			}
-			if (LocationManager.GPS_PROVIDER.equals(providerName)) {
-				updateMinTime = 0L;
-				updateMinDistance = 0L;
-			} else {
-				updateMinTime = LOCATION_UPDATE_FREQ;
-				updateMinDistance = 2500L;
-			}
-			locationManager.requestLocationUpdates(providerName, updateMinTime,
-					updateMinDistance, this);
 		}
 	}
 
