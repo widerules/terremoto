@@ -20,6 +20,13 @@
 		android:entryValues="@array/magnitude"
 		android:dialogTitle="Magnitudine"
 		android:defaultValue="3" />
+	<ListPreference android:key="PREF_OLDEST_EVENT"
+		android:title="Conservazione eventi"
+		android:summary="Tempo di conservazione degli eventi nel database locale"
+		android:entries="@array/keep_options"
+		android:entryValues="@array/keep_values"
+		android:dialogTitle="Conservazione eventi"
+		android:defaultValue="2592000" />
 	<CheckBoxPreference
     	android:key="PREF_TRACK_LOCATION"
     	android:title="Rileva posizione"

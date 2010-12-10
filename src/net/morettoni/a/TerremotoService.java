@@ -51,6 +51,7 @@ public class TerremotoService extends Service implements
 	private int maxDist = 200;
 	private boolean vibrateNotify = true;
 	private long updateFreq = 30;
+	private long oldestEvent = 2592000L;
 	private Location currentLocation;
 
 	@Override
@@ -130,6 +131,8 @@ public class TerremotoService extends Service implements
 			} catch (MalformedURLException e) {
 			} catch (IOException e) {
 			}
+			
+			removeOldEvents();
 
 			return null;
 		}
@@ -217,6 +220,7 @@ public class TerremotoService extends Service implements
 	private void updatePreferences(SharedPreferences prefs) {
 		updateFreq = Integer
 				.parseInt(prefs.getString("PREF_UPDATE_FREQ", "30")) * 60L * 1000L;
+		oldestEvent = Long.parseLong(prefs.getString("PREF_OLDEST_EVENT", "2592000"));
 		minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
 		boolean autoUpdate = prefs.getBoolean("PREF_AUTO_UPDATE", true);
 		vibrateNotify = prefs.getBoolean("PREF_VIBRATE", true);
@@ -255,11 +259,22 @@ public class TerremotoService extends Service implements
 		} else {
 			alarms.cancel(alarmIntent);
 		}
+		removeOldEvents();
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
+	}
+	
+	private void removeOldEvents() {
+		if (oldestEvent != 0L) {
+			ContentResolver cr = getContentResolver();
+			
+			long now = System.currentTimeMillis();
+			String w = String.format("%s < %d", TerremotoProvider.KEY_DATA, now-(oldestEvent*1000L));
+			cr.delete(TerremotoProvider.CONTENT_URI, w, null);
+		}
 	}
 
 	private boolean aggiungi(Terremoto terremoto) {

@@ -97,7 +97,6 @@ public class TerremotoActivity extends TabActivity implements
 		});
 
 		terremotiView.setOnItemClickListener(new OnItemClickListener() {
-			@SuppressWarnings("unchecked")
 			public void onItemClick(AdapterView _av, View _v, int _index,
 					long arg3) {
 				Terremoto terremoto = terremotiList.get(_index);
