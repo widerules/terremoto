@@ -1,11 +1,12 @@
-package net.morettoni.a;
+package net.morettoni.terremoto;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.morettoni.a.beans.Terremoto;
+import net.morettoni.terremoto.R;
+import net.morettoni.terremoto.beans.Terremoto;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -196,7 +197,7 @@ public class TerremotoActivity extends TabActivity implements
                 dettagli.append("Data evento: ");
                 dettagli.append(sdf.format(data));
                 dettagli.append(String.format("\nMagnitudine: %.1f\n", mag));
-                dettagli.append(String.format("Profondità: %.1fkm\n", deep));
+                dettagli.append(String.format("Profondità: %,.1fkm\n", deep));
                 dettagli.append(String.format(
                         "Posizione: %.3f (lat) %.3f (lon)\n", lat, lon));
 
@@ -205,7 +206,7 @@ public class TerremotoActivity extends TabActivity implements
                     event.setLatitude(lat);
                     event.setLongitude(lon);
 
-                    dettagli.append(String.format("Distanza: %.0fkm\n",
+                    dettagli.append(String.format("Distanza: %,.0fkm\n",
                             (event.distanceTo(currentLocation) / 1000.0F)));
                 }
                 dettagli.append("\nhttp://cnt.rm.ingv.it/data_id/");

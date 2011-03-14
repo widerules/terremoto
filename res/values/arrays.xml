@@ -1,83 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string-array name="update_freq_options">
-		<item>5 minuti</item>
-		<item>10 minuti</item>
-		<item>15 minuti</item>
-		<item>30 minuti</item>
-		<item>1 ora</item>
-	</string-array>
-	<string-array name="update_freq_values">
-		<item>5</item>
-		<item>10</item>
-		<item>15</item>
-		<item>30</item>
-		<item>60</item>
-	</string-array>
-	<string-array name="keep_options">
-		<item>1 giorno</item>
-		<item>7 giorni</item>
-		<item>15 giorni</item>
-		<item>1 mese</item>
-		<item>6 mesi</item>
-		<item>1 anno</item>
-		<item>Tutti</item>
-	</string-array>
-	<string-array name="keep_values">
-		<item>86400</item>
-		<item>604800</item>
-		<item>1296000</item>
-		<item>2592000</item>
-		<item>15552000</item>
-		<item>31536000</item>
-		<item>0</item>
-	</string-array>
-	<string-array name="magnitude_options">
+    <string-array name="update_freq_options">
+        <item>5 minuti</item>
+        <item>10 minuti</item>
+        <item>15 minuti</item>
+        <item>30 minuti</item>
+        <item>1 ora</item>
+    </string-array>
+    <string-array name="update_freq_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+    <string-array name="keep_options">
+        <item>1 giorno</item>
+        <item>7 giorni</item>
+        <item>15 giorni</item>
+        <item>1 mese</item>
+        <item>6 mesi</item>
+        <item>1 anno</item>
+        <item>Tutti</item>
+    </string-array>
+    <string-array name="keep_values">
+        <item>86400</item>
+        <item>604800</item>
+        <item>1296000</item>
+        <item>2592000</item>
+        <item>15552000</item>
+        <item>31536000</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="magnitude_options">
         <item>1</item>
         <item>2</item>
-		<item>3</item>
-		<item>5</item>
-		<item>6</item>
-		<item>7</item>
-		<item>8</item>
-	</string-array>
-	<string-array name="magnitude">
+        <item>3</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="magnitude">
         <item>1</item>
         <item>2</item>
-		<item>3</item>
-		<item>5</item>
-		<item>6</item>
-		<item>7</item>
-		<item>8</item>
-	</string-array>
-	<string-array name="pins_options">
-		<item>5</item>
-		<item>10</item>
-		<item>15</item>
-		<item>30</item>
-	</string-array>
-	<string-array name="pins">
-		<item>5</item>
-		<item>10</item>
-		<item>15</item>
-		<item>30</item>
-	</string-array>	
-	<string-array name="distance_options">
-		<item>Qualsiasi</item>
-		<item>100km</item>
-		<item>150km</item>
-		<item>200km</item>
-		<item>500km</item>
-		<item>1000km</item>
-		<item>2000km</item>
-	</string-array>
-	<string-array name="distance">
-		<item>0</item>
-		<item>100</item>
-		<item>150</item>
-		<item>200</item>
-		<item>500</item>
-		<item>1000</item>
-		<item>2000</item>
-	</string-array>	
+        <item>3</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="pins_options">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+    </string-array>
+    <string-array name="pins">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+    </string-array>
+    <string-array name="distance_options">
+        <item>Qualsiasi</item>
+        <item>100km</item>
+        <item>150km</item>
+        <item>200km</item>
+        <item>500km</item>
+        <item>1000km</item>
+        <item>2000km</item>
+    </string-array>
+    <string-array name="distance">
+        <item>0</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+        <item>500</item>
+        <item>1000</item>
+        <item>2000</item>
+    </string-array>
 </resources>

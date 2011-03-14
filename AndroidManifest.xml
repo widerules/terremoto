@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="net.morettoni.a"
-	android:versionName="1.15" android:versionCode="115">
-	<application android:icon="@drawable/icon"
-		android:theme="@android:style/Theme.NoTitleBar"
-		android:label="@string/app_name">
-		<activity android:name=".TerremotoActivity" android:label="@string/app_name">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
-		<activity android:name=".TerremotoMapActivity">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"></action>
-				<category android:name="android.intent.category.EMBED"></category>
-			</intent-filter>
-		</activity>
-		<activity android:name=".TerremotoPreference" android:label="@string/preference">
-		</activity>
+        package="net.morettoni.terremoto"
+        android:versionName="1.16" android:versionCode="116"
+        android:installLocation="auto">
+        <application android:icon="@drawable/icon"
+                android:theme="@android:style/Theme.NoTitleBar"
+                android:label="@string/app_name">
+                <activity android:name=".TerremotoActivity" android:label="@string/app_name">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN" />
+                                <category android:name="android.intent.category.LAUNCHER" />
+                        </intent-filter>
+                </activity>
+                <activity android:name=".TerremotoMapActivity">
+                        <intent-filter>
+                                <action android:name="android.intent.action.MAIN"></action>
+                                <category android:name="android.intent.category.EMBED"></category>
+                        </intent-filter>
+                </activity>
+                <activity android:name=".TerremotoPreference" android:label="@string/preference">
+                </activity>
 
-		<receiver android:name=".TerremotoAlarmReceiver">
-			<intent-filter>
-				<action android:name="net.morettoni.terremoti.TERREMOTI_ALARM" />
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
-			</intent-filter>
-		</receiver>
+                <receiver android:name=".TerremotoAlarmReceiver">
+                        <intent-filter>
+                                <action android:name="net.morettoni.terremoto.TERREMOTI_ALARM" />
+                                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                        </intent-filter>
+                </receiver>
 
-		<provider android:name=".TerremotoProvider"
-			android:authorities="net.morettoni.a.provider.terremoto" />
+                <provider android:name=".TerremotoProvider"
+                        android:authorities="net.morettoni.terremoto.provider.terremoto" />
 
-		<service android:enabled="true" android:name=".TerremotoService" />
+                <service android:enabled="true" android:name=".TerremotoService" />
 
-		<uses-library android:name="com.google.android.maps" />
-	</application>
-	<uses-sdk android:minSdkVersion="7" />
-	<uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
-	<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
+                <uses-library android:name="com.google.android.maps" />
+        </application>
+        <uses-sdk android:minSdkVersion="3" />
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.VIBRATE"/>
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+        <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
 </manifest> 

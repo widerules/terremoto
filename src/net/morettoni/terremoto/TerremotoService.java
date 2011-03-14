@@ -1,4 +1,4 @@
-package net.morettoni.a;
+package net.morettoni.terremoto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import net.morettoni.a.beans.Terremoto;
+import net.morettoni.terremoto.R;
+import net.morettoni.terremoto.beans.Terremoto;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -107,24 +108,31 @@ public class TerremotoService extends Service implements
 
                         event = str.split(",");
 
-                        terremoto = new Terremoto();
-                        terremoto.mLatitudine = Double.parseDouble(event[0]);
-                        terremoto.mLongitudine = Double.parseDouble(event[1]);
-                        terremoto.mProfondita = Double.parseDouble(event[2]);
                         try {
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            terremoto.mData = df.parse(event[3]);
-                            df.setTimeZone(TimeZone.getDefault());
-                        } catch (ParseException e) {
-                        }
-                        terremoto.mMagnitude = Double.parseDouble(event[4]);
-                        terremoto.mLuogo = event[5].replaceAll("_", " ");
-                        terremoto.mId = Long.parseLong(event[6]);
+                            terremoto = new Terremoto();
+                            terremoto.mLatitudine = Double
+                                    .parseDouble(event[0]);
+                            terremoto.mLongitudine = Double
+                                    .parseDouble(event[1]);
+                            terremoto.mProfondita = Double
+                                    .parseDouble(event[2]);
+                            try {
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                terremoto.mData = df.parse(event[3]);
+                                df.setTimeZone(TimeZone.getDefault());
+                            } catch (ParseException e) {
+                            }
+                            terremoto.mMagnitude = Double.parseDouble(event[4]);
+                            terremoto.mLuogo = event[5].replaceAll("_", " ");
+                            terremoto.mId = Long.parseLong(event[6]);
 
-                        if (aggiungi(terremoto))
-                            publishProgress(terremoto);
-                        else
+                            if (aggiungi(terremoto))
+                                publishProgress(terremoto);
+                            else
+                                break;
+                        } catch (NumberFormatException e) {
                             break;
+                        }
                     }
                     in.close();
                 }
@@ -203,7 +211,17 @@ public class TerremotoService extends Service implements
     }
 
     @Override
+    public void onStart(Intent intent, int startId) {
+        startService();
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        startService();
+        return Service.START_NOT_STICKY;
+    }
+
+    private void startService() {
         Context context = getApplicationContext();
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -212,8 +230,6 @@ public class TerremotoService extends Service implements
         updatePreferences(prefs);
 
         aggiornaTerremoti();
-
-        return Service.START_NOT_STICKY;
     }
 
     private void updatePreferences(SharedPreferences prefs) {
@@ -274,7 +290,11 @@ public class TerremotoService extends Service implements
             long now = System.currentTimeMillis();
             String w = String.format("%s < %d", TerremotoProvider.KEY_DATA, now
                     - (oldestEvent * 1000L));
-            cr.delete(TerremotoProvider.CONTENT_URI, w, null);
+            try {
+                cr.delete(TerremotoProvider.CONTENT_URI, w, null);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
