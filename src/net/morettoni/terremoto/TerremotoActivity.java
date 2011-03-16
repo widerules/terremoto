@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import net.morettoni.terremoto.R;
 import net.morettoni.terremoto.beans.Terremoto;
 
@@ -32,6 +36,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -44,6 +49,7 @@ public class TerremotoActivity extends TabActivity implements
     private static final long LOCATION_UPDATE_FREQ = 15L * 60L * 1000L;
     private static final int DETTAGLI_DIALOG = 1;
     private static final int INFO_DIALOG = 2;
+    private static final String AD_UNIT_ID = "a14d80b9fcd4255";
     private ListView terremotiView;
     private ArrayList<Terremoto> terremotiList;
     private TerremotoItemAdapter terremotiItems;
@@ -54,6 +60,7 @@ public class TerremotoActivity extends TabActivity implements
     private boolean trackLocation = false;
     private NotificationManager notificationManager;
     private Location currentLocation;
+    private AdView adView;
 
     public class TerremotoReceiver extends BroadcastReceiver {
         @Override
@@ -81,6 +88,15 @@ public class TerremotoActivity extends TabActivity implements
                 .setContent(i);
         tabHost.addTab(tabSpec);
         tabHost.setCurrentTab(0);
+
+        // ADV code start
+        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ad_id);
+        layout.addView(adView, 0);
+        AdRequest req = new AdRequest();
+        req.setTesting(false);
+        adView.loadAd(req);
+        // ADV code end
 
         terremotiView = (ListView) findViewById(R.id.terremotiList);
         terremotiList = new ArrayList<Terremoto>();
@@ -128,6 +144,7 @@ public class TerremotoActivity extends TabActivity implements
     @Override
     public void onResume() {
         super.onResume();
+
         IntentFilter filter;
         filter = new IntentFilter(TerremotoService.LISTA_TERREMOTI_AGGIORNATA);
         receiver = new TerremotoReceiver();
@@ -144,6 +161,12 @@ public class TerremotoActivity extends TabActivity implements
         super.onPause();
         unregisterReceiver(receiver);
         disableLocationTrack();
+    }
+
+    @Override
+    protected void onDestroy() {
+        adView.stopLoading();
+        super.onDestroy();
     }
 
     @Override
