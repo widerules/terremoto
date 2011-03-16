@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Terremoto!</string>
+    <string name="app_name">Terremoto (old)!</string>
     <string name="refresh">Aggiorna</string>
+    <string name="update">Aggiornamenti</string>
+    <string name="update_msg">ATTENZIONE!\nA causa di un cambio di nome del pacchetto occorre rimuovere questa versione di \"Terremoto!\" ed installare la nuova versione dal Market.\n\nVuoi procedere con l\'installazione? (Dovrai rimuovere a mano la vecchia versione)</string>
     <string name="info">Info</string>
+    <string name="yes">Sì</string>
+    <string name="no">No</string>
     <string name="info_text">Versione 1.16\n\nMonitoraggio degli eventi sismici Italiani.\n\nL\'elenco degli eventi viene rilevato dal sito dell\'Istituto Nazionale di Geofisica e Vulcanologia.\nL\'applicazione è stata sviluppata autonomamente dall\'autore.\n\nLuca Morettoni: http://www.morettoni.net\nProgetto: http://code.google.com/p/terremoto/</string>
     <string name="preference">Impostazioni</string>
     <string name="feed">http://apps.morettoni.net/terremoto</string>

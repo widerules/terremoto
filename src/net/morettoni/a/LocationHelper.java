@@ -1,4 +1,4 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import java.util.Date;
 

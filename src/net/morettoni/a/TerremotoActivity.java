@@ -1,12 +1,12 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.morettoni.terremoto.R;
-import net.morettoni.terremoto.beans.Terremoto;
+import net.morettoni.a.beans.Terremoto;
+import net.morettoni.a.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,6 +15,7 @@ import android.app.TabActivity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -44,6 +46,7 @@ public class TerremotoActivity extends TabActivity implements
     private static final long LOCATION_UPDATE_FREQ = 15L * 60L * 1000L;
     private static final int DETTAGLI_DIALOG = 1;
     private static final int INFO_DIALOG = 2;
+    private static final int UPDATE_DIALOG = 3;
     private ListView terremotiView;
     private ArrayList<Terremoto> terremotiList;
     private TerremotoItemAdapter terremotiItems;
@@ -110,6 +113,8 @@ public class TerremotoActivity extends TabActivity implements
                 terremotiList);
         terremotiView.setAdapter(terremotiItems);
 
+        showDialog(UPDATE_DIALOG);
+
         Context context = getApplicationContext();
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -167,6 +172,31 @@ public class TerremotoActivity extends TabActivity implements
             dettagliDialog.setTitle("Terremoto!");
             dettagliDialog.setView(dettagliView);
             return dettagliDialog.create();
+        case UPDATE_DIALOG:
+            dettagliDialog = new AlertDialog.Builder(this);
+            li = LayoutInflater.from(this);
+            dettagliView = li.inflate(R.layout.dettagli, null);
+            dettagliDialog = new AlertDialog.Builder(this);
+            dettagliDialog.setTitle(getString(R.string.update));
+            dettagliDialog.setView(dettagliView);
+            dettagliDialog.setPositiveButton(getString(R.string.yes),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                int whichButton) {
+                            Intent intent = new Intent();
+                            intent.setAction(android.content.Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse("market://details?id=net.morettoni.terremoto"));
+                            startActivity(intent);
+                        }
+                    });
+            dettagliDialog.setNegativeButton(getString(R.string.no), 
+                    new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog,
+                        int whichButton) {
+                }
+            });
+
+            return dettagliDialog.create();
         }
         return null;
     }
@@ -177,6 +207,11 @@ public class TerremotoActivity extends TabActivity implements
         TextView tv;
 
         switch (id) {
+        case UPDATE_DIALOG:
+            dettagliDialog = (AlertDialog) dialog;
+            tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);
+            tv.setText(getString(R.string.update_msg));
+            break;
         case INFO_DIALOG:
             dettagliDialog = (AlertDialog) dialog;
             tv = (TextView) dettagliDialog.findViewById(R.id.dettagliTerremoto);

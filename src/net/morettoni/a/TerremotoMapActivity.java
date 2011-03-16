@@ -1,7 +1,7 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
-import net.morettoni.terremoto.R;
-import net.morettoni.terremoto.beans.Terremoto;
+import net.morettoni.a.beans.Terremoto;
+import net.morettoni.a.R;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;

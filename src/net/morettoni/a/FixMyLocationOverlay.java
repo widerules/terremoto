@@ -1,4 +1,4 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;

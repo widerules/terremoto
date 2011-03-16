@@ -1,4 +1,4 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import net.morettoni.terremoto.R;
-import net.morettoni.terremoto.beans.Terremoto;
+import net.morettoni.a.beans.Terremoto;
+import net.morettoni.a.R;
 
 import android.app.AlarmManager;
 import android.app.Notification;

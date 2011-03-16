@@ -1,11 +1,11 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import net.morettoni.terremoto.R;
-import net.morettoni.terremoto.beans.Terremoto;
+import net.morettoni.a.beans.Terremoto;
+import net.morettoni.a.R;
 import android.content.Context;
 import android.location.Location;
 import android.view.LayoutInflater;

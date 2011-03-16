@@ -1,6 +1,6 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
-import net.morettoni.terremoto.R;
+import net.morettoni.a.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 

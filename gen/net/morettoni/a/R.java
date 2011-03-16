@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 public final class R {
     public static final class array {
@@ -58,14 +58,18 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f060000;
-        public static final int feed=0x7f060005;
-        public static final int info=0x7f060002;
-        public static final int info_text=0x7f060003;
+        public static final int feed=0x7f060009;
+        public static final int info=0x7f060004;
+        public static final int info_text=0x7f060007;
         /**  debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string> 
          */
-        public static final int map_key=0x7f060006;
-        public static final int preference=0x7f060004;
+        public static final int map_key=0x7f06000a;
+        public static final int no=0x7f060006;
+        public static final int preference=0x7f060008;
         public static final int refresh=0x7f060001;
+        public static final int update=0x7f060002;
+        public static final int update_msg=0x7f060003;
+        public static final int yes=0x7f060005;
     }
     public static final class xml {
         public static final int preference=0x7f040000;

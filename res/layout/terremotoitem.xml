@@ -24,21 +24,18 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
                 <TextView android:id="@+id/rowPlace"
-                    android:layout_weight="1"
                     android:gravity="left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:ellipsize="marquee"
                     android:textStyle="bold" />
                 <TextView android:id="@+id/rowDeep"
-                    android:layout_weight="2"
+                    android:layout_weight="1"
                     android:gravity="right"
                     android:paddingLeft="5px"
                     android:paddingRight="5px"
                     android:singleLine="true"
                     android:ellipsize="marquee"
-                    android:minWidth="200px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>

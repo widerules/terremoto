@@ -1,8 +1,8 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import java.util.ArrayList;
 
-import net.morettoni.terremoto.beans.Terremoto;
+import net.morettoni.a.beans.Terremoto;
 
 import android.graphics.drawable.Drawable;
 

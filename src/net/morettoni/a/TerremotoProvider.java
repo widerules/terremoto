@@ -1,4 +1,4 @@
-package net.morettoni.terremoto;
+package net.morettoni.a;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
