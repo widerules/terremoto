@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 public class TerremotoAlarmReceiver extends BroadcastReceiver {
-    public static final String TERREMOTI_ALARM = "net.morettono.terremoti.TERREMOTI_ALARM";
+    public static final String TERREMOTI_ALARM = "net.morettoni.terremoti.TERREMOTI_ALARM";
 
     @Override
     public void onReceive(Context context, Intent intent) {
