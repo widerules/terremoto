@@ -380,6 +380,7 @@ public class TerremotoActivity extends TabActivity implements
                 }
             } while (c.moveToNext());
         }
+        c.close();
 
         terremotiItems.notifyDataSetChanged();
     }

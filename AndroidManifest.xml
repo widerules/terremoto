@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="net.morettoni.terremoto"
-        android:versionName="1.18" android:versionCode="118"
+        android:versionName="1.19" android:versionCode="119"
         android:installLocation="auto">
         <application android:icon="@drawable/icon"
                 android:theme="@android:style/Theme.NoTitleBar"
@@ -26,7 +26,7 @@
 
                 <receiver android:name=".TerremotoAlarmReceiver">
                         <intent-filter>
-                                <action android:name="net.morettoni.terremoto.TERREMOTI_ALARM" />
+                                <action android:name="net.morettoni.terremoti.TERREMOTI_ALARM" />
                                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                         </intent-filter>
                 </receiver>

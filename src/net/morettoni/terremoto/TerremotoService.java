@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class TerremotoService extends Service implements
         OnSharedPreferenceChangeListener, LocationListener {
@@ -85,6 +86,7 @@ public class TerremotoService extends Service implements
         protected Void doInBackground(Void... params) {
             String feed = getString(R.string.feed);
             try {
+                Log.i("Terremoto", "updating feeds");
                 URL url = new URL(feed);
                 HttpURLConnection httpConnection = (HttpURLConnection) url
                         .openConnection();
@@ -137,7 +139,9 @@ public class TerremotoService extends Service implements
                     in.close();
                 }
             } catch (MalformedURLException e) {
+                Log.e("Terremoto", e.getMessage());
             } catch (IOException e) {
+                Log.e("Terremoto", e.getMessage());
             }
 
             removeOldEvents();
@@ -270,6 +274,7 @@ public class TerremotoService extends Service implements
         if (autoUpdate) {
             int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
             long timeToRefresh = SystemClock.elapsedRealtime() + updateFreq;
+            Log.i("Terremoto", "refresching every " + updateFreq);
             alarms.setRepeating(alarmType, timeToRefresh, updateFreq,
                     alarmIntent);
         } else {
@@ -338,9 +343,11 @@ public class TerremotoService extends Service implements
     private void aggiornaTerremoti() {
         if (lastLookup == null
                 || lastLookup.getStatus().equals(AsyncTask.Status.FINISHED)) {
+            Log.i("Terremoto", "starting LookupTask...");
             lastLookup = new TerremotoLookupTask();
             lastLookup.execute((Void[]) null);
-        }
+        } else
+            Log.e("Terremoto", "can't start LookupTask");
     }
 
     @Override
