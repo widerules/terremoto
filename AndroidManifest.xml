@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="net.morettoni.a"
-        android:versionName="1.16" android:versionCode="116"
+        android:versionName="1.17" android:versionCode="117"
         android:installLocation="auto">
         <application android:icon="@drawable/icon"
                 android:theme="@android:style/Theme.NoTitleBar"
@@ -20,6 +20,8 @@
                 </activity>
                 <activity android:name=".TerremotoPreference" android:label="@string/preference">
                 </activity>
+                <activity android:name="com.google.ads.AdActivity"
+                    android:configChanges="keyboard|keyboardHidden|orientation"/>
 
                 <receiver android:name=".TerremotoAlarmReceiver">
                         <intent-filter>
@@ -37,6 +39,7 @@
         </application>
         <uses-sdk android:minSdkVersion="3" />
         <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
         <uses-permission android:name="android.permission.VIBRATE"/>
         <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
         <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import net.morettoni.a.beans.Terremoto;
 import net.morettoni.a.R;
 
@@ -34,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -47,6 +52,7 @@ public class TerremotoActivity extends TabActivity implements
     private static final int DETTAGLI_DIALOG = 1;
     private static final int INFO_DIALOG = 2;
     private static final int UPDATE_DIALOG = 3;
+    private static final String AD_UNIT_ID = "a14d80bb49bb308";
     private ListView terremotiView;
     private ArrayList<Terremoto> terremotiList;
     private TerremotoItemAdapter terremotiItems;
@@ -57,6 +63,7 @@ public class TerremotoActivity extends TabActivity implements
     private boolean trackLocation = false;
     private NotificationManager notificationManager;
     private Location currentLocation;
+    private AdView adView;
 
     public class TerremotoReceiver extends BroadcastReceiver {
         @Override
@@ -84,6 +91,15 @@ public class TerremotoActivity extends TabActivity implements
                 .setContent(i);
         tabHost.addTab(tabSpec);
         tabHost.setCurrentTab(0);
+
+        // ADV code start
+        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ad_id);
+        layout.addView(adView, 0);
+        AdRequest req = new AdRequest();
+        req.setTesting(false);
+        adView.loadAd(req);
+        // ADV code end
 
         terremotiView = (ListView) findViewById(R.id.terremotiList);
         terremotiList = new ArrayList<Terremoto>();
@@ -149,6 +165,12 @@ public class TerremotoActivity extends TabActivity implements
         super.onPause();
         unregisterReceiver(receiver);
         disableLocationTrack();
+    }
+
+    @Override
+    protected void onDestroy() {
+        adView.stopLoading();
+        super.onDestroy();
     }
 
     @Override
