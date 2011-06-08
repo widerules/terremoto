@@ -62,6 +62,7 @@ public class TerremotoActivity extends TabActivity implements
     private NotificationManager notificationManager;
     private Location currentLocation;
     private AdView adView;
+    private AdRequest req;
 
     public class TerremotoReceiver extends BroadcastReceiver {
         @Override
@@ -99,7 +100,7 @@ public class TerremotoActivity extends TabActivity implements
         adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
         LinearLayout layout = (LinearLayout) findViewById(R.id.ad_id);
         layout.addView(adView, 0);
-        AdRequest req = new AdRequest();
+        req = new AdRequest();
         req.setTesting(false);
         adView.loadAd(req);
         // ADV code end
@@ -397,6 +398,11 @@ public class TerremotoActivity extends TabActivity implements
                 location, LOCATION_UPDATE_FREQ);
         terremotiItems.setCurrentLocation(currentLocation);
         terremotiItems.notifyDataSetChanged();
+
+        if (req != null && adView != null && currentLocation != null) {
+            req.setLocation(currentLocation);
+            adView.loadAd(req);
+        }
     }
 
     @Override
