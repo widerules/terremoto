@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.location.Location;
@@ -76,6 +77,10 @@ public class TerremotoActivity extends TabActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initUI();
+    }
+
+    private void initUI() {
         setContentView(R.layout.main);
 
         Resources res = getResources();
@@ -424,6 +429,12 @@ public class TerremotoActivity extends TabActivity implements
                 location, LOCATION_UPDATE_FREQ);
         terremotiItems.setCurrentLocation(currentLocation);
         terremotiItems.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        initUI();
     }
 
     @Override
