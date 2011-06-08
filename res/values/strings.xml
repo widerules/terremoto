@@ -3,7 +3,7 @@
     <string name="app_name">Terremoto!</string>
     <string name="refresh">Aggiorna</string>
     <string name="info">Info</string>
-    <string name="info_text">Versione 1.20\n\nMonitoraggio degli eventi sismici Italiani.\n\nL\'elenco degli eventi viene rilevato dal sito dell\'Istituto Nazionale di Geofisica e Vulcanologia.\nL\'applicazione è stata sviluppata autonomamente dall\'autore.\n\nLuca Morettoni: http://www.morettoni.net\nProgetto: http://code.google.com/p/terremoto/</string>
+    <string name="info_text">Versione 1.2\n\nMonitoraggio degli eventi sismici Italiani.\n\nL\'elenco degli eventi viene rilevato dal sito dell\'Istituto Nazionale di Geofisica e Vulcanologia.\nL\'applicazione è stata sviluppata autonomamente dall\'autore.\n\nLuca Morettoni: http://www.morettoni.net\nProgetto: http://code.google.com/p/terremoto/</string>
     <string name="preference">Impostazioni</string>
     <string name="feed">http://apps.morettoni.net/terremoto</string>
     <!-- debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string> -->
