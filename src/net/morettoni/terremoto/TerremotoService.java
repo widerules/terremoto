@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -304,11 +305,12 @@ public class TerremotoService extends Service implements
     }
 
     private boolean aggiungi(Terremoto terremoto) {
+        boolean insert = false;
         ContentResolver cr = getContentResolver();
 
         String w = TerremotoProvider.KEY_ID + " = " + terremoto.mId;
-        if (cr.query(TerremotoProvider.CONTENT_URI, null, w, null, null)
-                .getCount() <= 0) {
+        Cursor c = cr.query(TerremotoProvider.CONTENT_URI, null, w, null, null); 
+        if (c.getCount() <= 0) {
             ContentValues values = new ContentValues();
 
             values.put(TerremotoProvider.KEY_ID, terremoto.mId);
@@ -321,10 +323,11 @@ public class TerremotoService extends Service implements
 
             cr.insert(TerremotoProvider.CONTENT_URI, values);
             nuovoTerremoto(terremoto);
-            return true;
+            insert = true;
         }
 
-        return false;
+        c.close();
+        return insert;
     }
 
     private void nuovoTerremoto(Terremoto terremoto) {
