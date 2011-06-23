@@ -7,6 +7,7 @@ import java.util.Date;
 import net.morettoni.terremoto.R;
 import net.morettoni.terremoto.beans.Terremoto;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,8 +56,13 @@ public class TerremotoItemAdapter extends ArrayAdapter<Terremoto> {
 
         dateView.setText(sdf.format(dataEvento));
         luogoView.setText(terremoto.mLuogo);
-        magView.setText(String.format("%.1f", terremoto.mMagnitude));
         deepView.setText(String.format("%,.1fkm", terremoto.mProfondita));
+        magView.setText(String.format("%.1f", terremoto.mMagnitude));
+        magView.setTextColor(deepView.getTextColors().getDefaultColor());
+        if (terremoto.mMagnitude >= 3.0)
+            magView.setTextColor(Color.YELLOW);
+        if (terremoto.mMagnitude >= 6.0)
+            magView.setTextColor(Color.RED);
 
         if (currentLocation == null) {
             distView.setText("");

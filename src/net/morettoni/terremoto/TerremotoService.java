@@ -242,14 +242,14 @@ public class TerremotoService extends Service implements
                 .parseInt(prefs.getString("PREF_UPDATE_FREQ", "30")) * 60L * 1000L;
         oldestEvent = Long.parseLong(prefs.getString("PREF_OLDEST_EVENT",
                 "2592000"));
-        minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
+        minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG_NOTIFY", "3"));
         boolean autoUpdate = prefs.getBoolean("PREF_AUTO_UPDATE", true);
         vibrateNotify = prefs.getBoolean("PREF_VIBRATE", true);
         boolean track = prefs.getBoolean("PREF_TRACK_LOCATION", false);
         if (!track)
             maxDist = 0;
         else
-            maxDist = Integer.parseInt(prefs.getString("PREF_MAX_DIST", "200"));
+            maxDist = Integer.parseInt(prefs.getString("PREF_MAX_DIST_NOTIFY", "200"));
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);

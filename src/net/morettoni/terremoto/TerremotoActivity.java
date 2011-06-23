@@ -63,6 +63,7 @@ public class TerremotoActivity extends TabActivity implements
     private Location currentLocation;
     private AdView adView;
     private AdRequest req;
+    private int maxDist = 0;
 
     public class TerremotoReceiver extends BroadcastReceiver {
         @Override
@@ -138,6 +139,7 @@ public class TerremotoActivity extends TabActivity implements
                 .getDefaultSharedPreferences(context);
         prefs.registerOnSharedPreferenceChangeListener(this);
         minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
+        maxDist = Integer.parseInt(prefs.getString("PREF_MAX_DIST", "0"));
 
         String svcName = Context.NOTIFICATION_SERVICE;
         notificationManager = (NotificationManager) getSystemService(svcName);
@@ -294,17 +296,15 @@ public class TerremotoActivity extends TabActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
             String key) {
-        if (key.equals("PREF_MIN_MAG")) {
-            int newMag = Integer.parseInt(sharedPreferences.getString(
-                    "PREF_MIN_MAG", "0"));
+        int newMag = minMag;
+        int newDist = maxDist;
 
-            if (newMag != minMag) {
-                minMag = newMag;
-                updateEvents();
-            }
+        if (key.equals("PREF_MIN_MAG")) {
+            newMag = Integer.parseInt(sharedPreferences.getString(
+                    "PREF_MIN_MAG", "0"));
         }
 
-        if (key.equals("PREF_TRACK_LOCATION")) {
+        if (key.equals("PREF_TRACK_LOCATION") || key.equals("PREF_MAX_DIST")) {
             boolean track = sharedPreferences.getBoolean("PREF_TRACK_LOCATION",
                     false);
             if (!track && trackLocation) {
@@ -318,6 +318,14 @@ public class TerremotoActivity extends TabActivity implements
             }
 
             trackLocation = track;
+            if (track)
+                newDist = Integer.parseInt(sharedPreferences.getString("PREF_MAX_DIST", "0"));
+        }
+
+        if (newMag != minMag || newDist != maxDist) {
+            maxDist = newDist;
+            minMag = newMag;
+            updateEvents();
         }
     }
 
@@ -367,17 +375,24 @@ public class TerremotoActivity extends TabActivity implements
 
         if (c.moveToFirst()) {
             do {
-                if (c.getDouble(TerremotoProvider.MAGNITUDE_COLUMN) >= minMag) {
-                    Terremoto terremoto = new Terremoto();
+                Terremoto terremoto = new Terremoto();
+                terremoto.mLongitudine = c.getDouble(TerremotoProvider.LONGITUDE_COLUMN);
+                terremoto.mLatitudine = c.getDouble(TerremotoProvider.LATITUDE_COLUMN);
+                terremoto.mMagnitude = c.getDouble(TerremotoProvider.MAGNITUDE_COLUMN);
+
+                boolean add = terremoto.mMagnitude >= minMag;
+                if (add && currentLocation != null && maxDist > 0) {
+                    Location event = new Location("dummy");
+                    event.setLatitude(terremoto.mLatitudine);
+                    event.setLongitude(terremoto.mLongitudine);
+
+                    float distance = event.distanceTo(currentLocation) / 1000.0F;
+                    add = distance <= maxDist;
+                }
+                if (add) {
                     terremoto.mId = c.getLong(TerremotoProvider.ID_COLUMN);
                     terremoto.mData = new Date(
                             c.getLong(TerremotoProvider.DATA_COLUMN));
-                    terremoto.mLongitudine = c
-                            .getDouble(TerremotoProvider.LONGITUDE_COLUMN);
-                    terremoto.mLatitudine = c
-                            .getDouble(TerremotoProvider.LATITUDE_COLUMN);
-                    terremoto.mMagnitude = c
-                            .getDouble(TerremotoProvider.MAGNITUDE_COLUMN);
                     terremoto.mLuogo = c
                             .getString(TerremotoProvider.WHERE_COLUMN);
                     terremoto.mProfondita = c
