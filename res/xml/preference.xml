@@ -26,10 +26,10 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Visualizzazione">
         <ListPreference android:key="PREF_MIN_MAG"
-            android:title="Magnitudine minima"
+            android:title="Magnitudo minima"
             android:summary="Intensità minima degli eventi da visualizzare"
             android:entries="@array/magnitude_options"
-            android:entryValues="@array/magnitude" android:dialogTitle="Magnitudine"
+            android:entryValues="@array/magnitude" android:dialogTitle="Magnitudo"
             android:defaultValue="3" />
         <ListPreference android:key="PREF_MAX_DIST"
             android:dependency="PREF_TRACK_LOCATION" android:title="Distanza dall'evento"
@@ -44,10 +44,10 @@
             android:summary="Emette una vibrazione alla ricezione di un nuovo evento"
             android:defaultValue="true" />
         <ListPreference android:key="PREF_MIN_MAG_NOTIFY"
-            android:title="Magnitudine minima"
+            android:title="Magnitudo minima"
             android:summary="Intensità minima degli eventi da notificare"
             android:entries="@array/magnitude_options"
-            android:entryValues="@array/magnitude" android:dialogTitle="Magnitudine"
+            android:entryValues="@array/magnitude" android:dialogTitle="Magnitudo"
             android:defaultValue="3" />
         <ListPreference android:key="PREF_MAX_DIST_NOTIFY"
             android:dependency="PREF_TRACK_LOCATION" android:title="Distanza dall'evento"
