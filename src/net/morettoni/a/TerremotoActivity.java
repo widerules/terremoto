@@ -259,7 +259,7 @@ public class TerremotoActivity extends TabActivity implements
                 StringBuilder dettagli = new StringBuilder();
                 dettagli.append("Data evento: ");
                 dettagli.append(sdf.format(data));
-                dettagli.append(String.format("\nMagnitudine: %.1f\n", mag));
+                dettagli.append(String.format("\nMagnitudo: %.1f\n", mag));
                 dettagli.append(String.format("Profondità: %,.1fkm\n", deep));
                 dettagli.append(String.format(
                         "Posizione: %.3f (lat) %.3f (lon)\n", lat, lon));

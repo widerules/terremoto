@@ -14,11 +14,11 @@
         android:dialogTitle="Frequenza di aggiornamento"
         android:defaultValue="30" />
     <ListPreference android:key="PREF_MIN_MAG"
-        android:title="Magnitudine minima"
+        android:title="Magnitudo minima"
         android:summary="Intensità minima degli eventi da visualizzare"
         android:entries="@array/magnitude_options"
         android:entryValues="@array/magnitude"
-        android:dialogTitle="Magnitudine"
+        android:dialogTitle="Magnitudo"
         android:defaultValue="3" />
     <ListPreference android:key="PREF_OLDEST_EVENT"
         android:title="Conservazione eventi"
