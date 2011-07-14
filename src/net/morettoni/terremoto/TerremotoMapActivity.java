@@ -30,7 +30,9 @@ public class TerremotoMapActivity extends MapActivity implements
     private CenterTerremotoReceiver centerTerremotiReceiver;
     private MapView mapView;
     private FixMyLocationOverlay myLocationOverlay;
-    private TerremotoItemizedOverlay terremotoItemizedOverlay;
+    private TerremotoItemizedOverlay overlayLow;
+    private TerremotoItemizedOverlay overlayMedium;
+    private TerremotoItemizedOverlay overlayHigh;
     private int minMag = 3;
     private int maxPins = 10;
     private NotificationManager notificationManager;
@@ -56,7 +58,13 @@ public class TerremotoMapActivity extends MapActivity implements
                     .getStringExtra(TerremotoProvider.KEY_WHERE);
             terremoto.mMagnitude = intent.getDoubleExtra(
                     TerremotoProvider.KEY_MAG, 0.0);
-            terremotoItemizedOverlay.addOverlay(terremoto);
+
+            if (terremoto.mMagnitude < 3.0)
+                overlayLow.addOverlay(terremoto);
+            else if (terremoto.mMagnitude < 6.0)
+                overlayMedium.addOverlay(terremoto);
+            else
+                overlayHigh.addOverlay(terremoto);
 
             Double lat = terremoto.mLatitudine * 1E6;
             Double lng = terremoto.mLongitudine * 1E6;
@@ -92,12 +100,20 @@ public class TerremotoMapActivity extends MapActivity implements
         minMag = Integer.parseInt(prefs.getString("PREF_MIN_MAG", "3"));
         maxPins = Integer.parseInt(prefs.getString("PREF_MAP_PINS", "10"));
 
-        Drawable defaultMarker = getResources().getDrawable(
-                R.drawable.map_marker_blue);
-        defaultMarker.setBounds(0, 0, defaultMarker.getIntrinsicWidth(),
-                defaultMarker.getIntrinsicHeight());
-        terremotoItemizedOverlay = new TerremotoItemizedOverlay(defaultMarker);
-        mapView.getOverlays().add(terremotoItemizedOverlay);
+        Drawable lowMarker = getResources().getDrawable(R.drawable.map_marker_low);
+        lowMarker.setBounds(0, 0, lowMarker.getIntrinsicWidth(), lowMarker.getIntrinsicHeight());
+        Drawable medimMarker = getResources().getDrawable(R.drawable.map_marker_med);
+        medimMarker.setBounds(0, 0, lowMarker.getIntrinsicWidth(), lowMarker.getIntrinsicHeight());
+        Drawable highMarker = getResources().getDrawable(R.drawable.map_marker_high);
+        highMarker.setBounds(0, 0, lowMarker.getIntrinsicWidth(), lowMarker.getIntrinsicHeight());
+
+        overlayLow = new TerremotoItemizedOverlay(lowMarker);
+        overlayMedium = new TerremotoItemizedOverlay(medimMarker);
+        overlayHigh = new TerremotoItemizedOverlay(highMarker);
+
+        mapView.getOverlays().add(overlayLow);
+        mapView.getOverlays().add(overlayMedium);
+        mapView.getOverlays().add(overlayHigh);
         mapView.getOverlays().add(myLocationOverlay);
 
         LinearLayout zoomLayout = (LinearLayout) findViewById(R.id.layout_zoom);
@@ -148,7 +164,10 @@ public class TerremotoMapActivity extends MapActivity implements
         double mag;
         int pins = maxPins;
 
-        terremotoItemizedOverlay.clear();
+        overlayLow.clear();
+        overlayMedium.clear();
+        overlayHigh.clear();
+
         terremotiCursor.requery();
         if (terremotiCursor.moveToFirst()) {
             do {
@@ -163,7 +182,13 @@ public class TerremotoMapActivity extends MapActivity implements
                     terremoto.mLuogo = terremotiCursor
                             .getString(TerremotoProvider.WHERE_COLUMN);
                     terremoto.mMagnitude = mag;
-                    terremotoItemizedOverlay.addOverlay(terremoto);
+
+                    if (terremoto.mMagnitude < 3.0)
+                        overlayLow.addOverlay(terremoto);
+                    else if (terremoto.mMagnitude < 6.0)
+                        overlayMedium.addOverlay(terremoto);
+                    else
+                        overlayHigh.addOverlay(terremoto);
                     pins--;
                 }
             } while (terremotiCursor.moveToNext() && pins > 0);

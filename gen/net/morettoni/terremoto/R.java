@@ -28,10 +28,12 @@ public final class R {
         public static final int list_tab=0x7f020002;
         public static final int list_tab_selected=0x7f020003;
         public static final int list_tab_unselected=0x7f020004;
-        public static final int map_marker_blue=0x7f020005;
-        public static final int map_tab=0x7f020006;
-        public static final int map_tab_selected=0x7f020007;
-        public static final int map_tab_unselected=0x7f020008;
+        public static final int map_marker_high=0x7f020005;
+        public static final int map_marker_low=0x7f020006;
+        public static final int map_marker_med=0x7f020007;
+        public static final int map_tab=0x7f020008;
+        public static final int map_tab_selected=0x7f020009;
+        public static final int map_tab_unselected=0x7f02000a;
     }
     public static final class id {
         public static final int ad_id=0x7f080001;
@@ -62,7 +64,8 @@ public final class R {
         public static final int feed=0x7f060005;
         public static final int info=0x7f060002;
         public static final int info_text=0x7f060003;
-        /**  debug <string name="map_key">0O80CXaXApsvFmnwKzZn4Xh_3FaiOfzZjn-c5oA</string>
+        /**  debug <string name="map_key">0SgSJuMq2LoXsZ5zdqu9IDfAx_dFW9L6iNk_tTQ</string>
+ release 
          */
         public static final int map_key=0x7f060006;
         public static final int preference=0x7f060004;
