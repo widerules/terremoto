@@ -62,5 +62,9 @@
             android:summary="Numero degli eventi da visualizzare sulla mappa"
             android:entries="@array/pins_options" android:entryValues="@array/pins"
             android:dialogTitle="Numero eventi" android:defaultValue="10" />
+        <CheckBoxPreference android:key="MAP_SAT_VIEW"
+            android:title="Vista dal satellite"
+            android:summary="Visualizza la mappa con la vista dal satellite"
+            android:defaultValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>

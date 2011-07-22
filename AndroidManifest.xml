@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="net.morettoni.terremoto"
-        android:versionName="1.26" android:versionCode="126"
+        android:versionName="1.27" android:versionCode="127"
         android:installLocation="auto">
         <application android:icon="@drawable/icon"
                 android:theme="@android:style/Theme.NoTitleBar"

@@ -64,7 +64,7 @@ public final class R {
         public static final int feed=0x7f060005;
         public static final int info=0x7f060002;
         public static final int info_text=0x7f060003;
-        /**  debug <string name="map_key">0SgSJuMq2LoXsZ5zdqu9IDfAx_dFW9L6iNk_tTQ</string>
+        /**  debug <string name="map_key">0SgSJuMq2LoXsZ5zdqu9IDfAx_dFW9L6iNk_tTQ</string> 
  release 
          */
         public static final int map_key=0x7f060006;

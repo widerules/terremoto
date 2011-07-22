@@ -121,7 +121,7 @@ public class TerremotoMapActivity extends MapActivity implements
         zoomLayout.addView(zoomView, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         mapView.displayZoomControls(true);
-        mapView.setSatellite(true);
+        mapView.setSatellite(prefs.getBoolean("MAP_SAT_VIEW", true));
         mapView.getController().setZoom(7);
 
         String svcName = Context.NOTIFICATION_SERVICE;
@@ -142,6 +142,10 @@ public class TerremotoMapActivity extends MapActivity implements
                 refreshTerremoti();
                 mapView.invalidate();
             }
+        }
+
+        if (key.equals("MAP_SAT_VIEW")) {
+            mapView.setSatellite(sharedPreferences.getBoolean("MAP_SAT_VIEW", true));
         }
 
         if (key.equals("PREF_MAP_PINS")) {
